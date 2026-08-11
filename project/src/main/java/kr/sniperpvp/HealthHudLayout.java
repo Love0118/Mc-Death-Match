@@ -9,7 +9,6 @@ final class HealthHudLayout {
     static final char FIRST_BAR_GLYPH = '\uE200';
     static final int BAR_STEPS = 10;
 
-    private static final Key HUD_FONT = Key.key("sniperpvp", "hud");
     private static final Key HEALTH_FONT = Key.key("sniperpvp", "bottom_health");
     private static final char[] POSITIVE_SPACES = {
         '\uE110', '\uE111', '\uE112', '\uE113', '\uE114', '\uE115', '\uE116', '\uE117'
@@ -29,16 +28,14 @@ final class HealthHudLayout {
         String healthText = safeHealth + "/" + safeMaximum;
         int textWidth = healthText.length() * DIGIT_WIDTH;
         int textX = Math.max(0, (BAR_WIDTH - textWidth) / 2);
-        return Component.text(Character.toString(glyphForStep(healthStep(safeHealth, safeMaximum))))
-            .color(NamedTextColor.WHITE)
+        String encoded = Character.toString(glyphForStep(healthStep(safeHealth, safeMaximum)))
+            + space(-BAR_WIDTH)
+            + space(textX)
+            + healthText
+            + space(Math.max(0, BAR_WIDTH - textX - textWidth));
+        return Component.text(encoded, NamedTextColor.WHITE)
             .font(HEALTH_FONT)
-            .decoration(TextDecoration.ITALIC, false)
-            .append(space(-BAR_WIDTH))
-            .append(space(textX))
-            .append(Component.text(healthText, NamedTextColor.WHITE)
-                .font(HEALTH_FONT)
-                .decoration(TextDecoration.ITALIC, false))
-            .append(space(Math.max(0, BAR_WIDTH - textX - textWidth)));
+            .decoration(TextDecoration.ITALIC, false);
     }
 
     static int healthStep(double health, double maximumHealth) {
@@ -61,9 +58,9 @@ final class HealthHudLayout {
         return characters.toString();
     }
 
-    private static Component space(int pixels) {
+    private static String space(int pixels) {
         if (pixels == 0) {
-            return Component.empty();
+            return "";
         }
         char[] glyphs = pixels > 0 ? POSITIVE_SPACES : NEGATIVE_SPACES;
         int remaining = Math.abs(pixels);
@@ -75,8 +72,6 @@ final class HealthHudLayout {
                 remaining -= width;
             }
         }
-        return Component.text(encoded.toString(), NamedTextColor.WHITE)
-            .font(HUD_FONT)
-            .decoration(TextDecoration.ITALIC, false);
+        return encoded.toString();
     }
 }

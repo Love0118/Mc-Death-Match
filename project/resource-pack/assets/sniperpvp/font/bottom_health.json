@@ -1,6 +1,27 @@
 {
   "providers": [
     {
+      "type": "space",
+      "advances": {
+        "\ue110": 1,
+        "\ue111": 2,
+        "\ue112": 4,
+        "\ue113": 8,
+        "\ue114": 16,
+        "\ue115": 32,
+        "\ue116": 64,
+        "\ue117": 128,
+        "\ue120": -1,
+        "\ue121": -2,
+        "\ue122": -4,
+        "\ue123": -8,
+        "\ue124": -16,
+        "\ue125": -32,
+        "\ue126": -64,
+        "\ue127": -128
+      }
+    },
+    {
       "type": "bitmap",
       "file": "sniperpvp:font/bottom_health_bars.png",
       "ascent": -8409087,

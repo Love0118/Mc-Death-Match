@@ -57,6 +57,9 @@ final class HudManager {
         PluginSettings.HudSettings hud = settings.get().hud();
         String time = formatTime(remainingTicks);
         for (Player player : players) {
+            // The reference HUD creates the bottom bar first. Its shader offset assumes that native
+            // first-BossBar title baseline before relocating the glyphs to the bottom of the screen.
+            updateHealthHud(player, hud.enabled());
             if (hud.enabled()) {
                 BossBar bar = showBossBar(player);
                 bar.color(BossBar.Color.WHITE);
@@ -71,7 +74,6 @@ final class HudManager {
             } else {
                 hideBossBar(player);
             }
-            updateHealthHud(player, hud.enabled());
             synchronizeTabScoreboard(player, hud.showTabScores() || hasGlobalKillLog());
         }
     }
@@ -85,6 +87,7 @@ final class HudManager {
         synchronizeDepartedPlayers(players);
         PluginSettings.HudSettings hud = settings.get().hud();
         for (Player player : players) {
+            updateHealthHud(player, hud.enabled());
             if (hud.enabled()) {
                 BossBar bar = showBossBar(player);
                 bar.color(BossBar.Color.WHITE);
@@ -93,7 +96,6 @@ final class HudManager {
             } else {
                 hideBossBar(player);
             }
-            updateHealthHud(player, hud.enabled());
             synchronizeTabScoreboard(player, hud.showTabScores() || hasGlobalKillLog());
         }
     }
