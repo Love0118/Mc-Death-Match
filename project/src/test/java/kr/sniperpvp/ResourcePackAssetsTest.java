@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -17,11 +19,11 @@ import org.junit.jupiter.api.Test;
 class ResourcePackAssetsTest {
     private static final Path PACK_ROOT = Path.of("resource-pack");
     private static final Map<Integer, String> KILL_SOUND_SHA256 = Map.of(
-        1, "c4f0f1b47a27909c30abcb3a043c630a888d6fdd48ac83394d6f47d8c22b9459",
-        2, "8213c98b9f27339bcb5781aa69e12c3f896459461c55899a6c5f622c20fbab43",
-        3, "a0f324715bbd04e12b9b54aa24c7da314616bc099019df46fc3bed93cb6040dc",
-        4, "5a3714eb8482842723ab2c821142b894aa151b5d23b2dfd6160c5e450a0da8ed",
-        5, "2d21951b21e6dd4438b7db0ab6fce0072b8418b1f35c88fd08bf31168b83cbe9"
+        1, "aa824edbdc8a2abea8d2adfc9304a049dd8f6618650d9c1441d2cea241c6e15e",
+        2, "aa403f92b0447ccfb18cc4d32d0ac71e7b519de9a2513010ce55522fbd9e3516",
+        3, "4d207e5bfd8ac013d4cd6b807bf09e30f9a900bcbcbc2df406b8b4cb80bc5f23",
+        4, "21bf2254ce263502a28996c8817a392b24910ebb788aab6e9817b98476db8c97",
+        5, "3de9da6b41400c034fa82cd46ce80d8d667197313b6e319a65761dc53dbf4dcb"
     );
 
     @Test
@@ -34,6 +36,7 @@ class ResourcePackAssetsTest {
     @Test
     void allFiveKillEventsAndVorbisFilesExist() throws IOException {
         String sounds = Files.readString(PACK_ROOT.resolve("assets/sniperpvp/sounds.json"));
+        assertEquals(5, occurrences(sounds, "\"preload\": true"));
         for (int tier = 1; tier <= 5; tier++) {
             assertTrue(sounds.contains("\"kill." + tier + "\""));
             Path audio = PACK_ROOT.resolve("assets/sniperpvp/sounds/kill/" + tier + ".ogg");
@@ -42,6 +45,13 @@ class ResourcePackAssetsTest {
             assertArrayEquals(new byte[]{'O', 'g', 'g', 'S'}, new byte[]{
                 header[0], header[1], header[2], header[3]
             });
+            int identification = indexOf(header, new byte[]{1, 'v', 'o', 'r', 'b', 'i', 's'});
+            assertTrue(identification >= 0, audio + " must contain a Vorbis identification packet");
+            assertEquals(1, Byte.toUnsignedInt(header[identification + 11]), audio + " must be mono");
+            int sampleRate = ByteBuffer.wrap(header, identification + 12, Integer.BYTES)
+                .order(ByteOrder.LITTLE_ENDIAN)
+                .getInt();
+            assertEquals(48_000, sampleRate, audio + " must use a 48 kHz sample rate");
             assertEquals(KILL_SOUND_SHA256.get(tier), sha256(audio));
         }
     }
@@ -170,5 +180,18 @@ class ResourcePackAssetsTest {
 
     private static int occurrences(String value, String needle) {
         return (value.length() - value.replace(needle, "").length()) / needle.length();
+    }
+
+    private static int indexOf(byte[] value, byte[] needle) {
+        outer:
+        for (int index = 0; index <= value.length - needle.length; index++) {
+            for (int offset = 0; offset < needle.length; offset++) {
+                if (value[index + offset] != needle[offset]) {
+                    continue outer;
+                }
+            }
+            return index;
+        }
+        return -1;
     }
 }

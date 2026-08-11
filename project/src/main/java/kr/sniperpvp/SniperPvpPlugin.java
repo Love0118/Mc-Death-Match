@@ -33,7 +33,7 @@ public final class SniperPvpPlugin extends JavaPlugin {
             arenaService,
             () -> gameManager != null && gameManager.isRunning()
         );
-        killStreakManager = new KillStreakManager(this::settings);
+        killStreakManager = new KillStreakManager(this, this::settings);
         gameManager = new GameManager(
             this,
             this::settings,

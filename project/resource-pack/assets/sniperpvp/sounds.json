@@ -1,27 +1,27 @@
 {
   "kill.1": {
     "sounds": [
-      { "name": "sniperpvp:kill/1", "stream": false }
+      { "name": "sniperpvp:kill/1", "stream": false, "preload": true }
     ]
   },
   "kill.2": {
     "sounds": [
-      { "name": "sniperpvp:kill/2", "stream": false }
+      { "name": "sniperpvp:kill/2", "stream": false, "preload": true }
     ]
   },
   "kill.3": {
     "sounds": [
-      { "name": "sniperpvp:kill/3", "stream": false }
+      { "name": "sniperpvp:kill/3", "stream": false, "preload": true }
     ]
   },
   "kill.4": {
     "sounds": [
-      { "name": "sniperpvp:kill/4", "stream": false }
+      { "name": "sniperpvp:kill/4", "stream": false, "preload": true }
     ]
   },
   "kill.5": {
     "sounds": [
-      { "name": "sniperpvp:kill/5", "stream": false }
+      { "name": "sniperpvp:kill/5", "stream": false, "preload": true }
     ]
   },
   "rifle.fire": {

@@ -25,6 +25,10 @@ public record PluginSettings(
             positiveInt(config.getInt("game.respawn-delay-seconds", 3), "game.respawn-delay-seconds"),
             positiveInt(config.getInt("game.spawn-protection-ticks", 20), "game.spawn-protection-ticks"),
             nonNegativeInt(config.getInt("game.restart-delay-seconds", 12), "game.restart-delay-seconds"),
+            nonNegative(config.getDouble("game.movement-speed-bonus", 2.0),
+                "game.movement-speed-bonus"),
+            nonNegative(config.getDouble("game.jump-strength-bonus", 2.0),
+                "game.jump-strength-bonus"),
             positive(config.getDouble("game.max-health", 100.0), "game.max-health"),
             positiveInt(config.getInt("game.regeneration.combat-delay-seconds", 5),
                 "game.regeneration.combat-delay-seconds"),
@@ -57,8 +61,8 @@ public record PluginSettings(
             nonNegative(config.getDouble("rifle.unscoped-spread", 0.015), "rifle.unscoped-spread"),
             positiveInt(config.getInt("rifle.cooldown-ticks", 30), "rifle.cooldown-ticks"),
             positiveInt(config.getInt("rifle.magazine-size", 5), "rifle.magazine-size"),
-            positiveInt(config.getInt("rifle.reload-ticks", 150), "rifle.reload-ticks"),
-            nonNegativeInt(config.getInt("rifle.bolt-sound-delay-ticks", 8), "rifle.bolt-sound-delay-ticks"),
+            positiveInt(config.getInt("rifle.reload-ticks", 90), "rifle.reload-ticks"),
+            nonNegativeInt(config.getInt("rifle.bolt-sound-delay-ticks", 14), "rifle.bolt-sound-delay-ticks"),
             boundedInt(config.getInt("rifle.zoom-slowness-amplifier", 12), 0, 254,
                 "rifle.zoom-slowness-amplifier"),
             config.getBoolean("rifle.require-zoom", false),
@@ -101,6 +105,8 @@ public record PluginSettings(
         KillStreakSettings killStreak = new KillStreakSettings(
             config.getBoolean("kill-streak.enabled", true),
             text(config, "kill-streak.sound-prefix", "sniperpvp:kill."),
+            nonNegativeInt(config.getInt("kill-streak.play-delay-ticks", 4),
+                "kill-streak.play-delay-ticks"),
             nonNegative(config.getDouble("kill-streak.volume", 1.0), "kill-streak.volume"),
             positive(config.getDouble("kill-streak.pitch", 1.0), "kill-streak.pitch")
         );
@@ -178,6 +184,8 @@ public record PluginSettings(
         int respawnDelaySeconds,
         int spawnProtectionTicks,
         int restartDelaySeconds,
+        double movementSpeedBonus,
+        double jumpStrengthBonus,
         double maxHealth,
         int regenerationCombatDelaySeconds,
         int regenerationIntervalSeconds,
@@ -241,6 +249,12 @@ public record PluginSettings(
     public record MatchResultSoundSettings(String victory, String defeat, double volume, double pitch) {
     }
 
-    public record KillStreakSettings(boolean enabled, String soundPrefix, double volume, double pitch) {
+    public record KillStreakSettings(
+        boolean enabled,
+        String soundPrefix,
+        int playDelayTicks,
+        double volume,
+        double pitch
+    ) {
     }
 }

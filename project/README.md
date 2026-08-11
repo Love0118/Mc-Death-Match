@@ -15,15 +15,16 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   as Below the Loop's sniper projectile, sampled every 0.75 blocks and force-sent for clear visibility.
 - Hit height selects exact damage: legs 30, body 50 and head 100. With fixed 100/100 health, a full-health
   headshot is lethal while body shots require two hits.
-- The rifle has a 5-round magazine. Firing immediately drops the scope, followed by a 30-tick
-  (1.5-second) bolt cycle using the supplied Mosin-Nagant bolt asset. Pressing Q manually reloads any
-  partially used magazine; after round five it automatically performs a 150-tick (7.5-second) full reload.
+- The rifle has a 5-round magazine. Firing immediately drops the scope; the supplied Mosin-Nagant bolt
+  sound starts after 14 ticks (0.7 seconds), while the next shot remains on the 30-tick (1.5-second) cycle.
+  Pressing Q manually reloads any partially used magazine; after round five it automatically performs a
+  90-tick (4.5-second) full reload.
   Fire audio uses Below the Loop's anti-material `mega_fire.ogg` at pitch 0.9; reload audio uses its
   generic firearm reload asset.
 - Ammo and real-time reload progress are kept in the rifle item name only; no duplicate action-bar ammo or
   reload line is sent.
-- Potion-based Speed and Jump Boost are not used. Arena players receive fixed movement speed 0.5,
-  jump-strength +0.5 and Glowing.
+- Potion-based Speed and Jump Boost are not used. Arena players receive fixed movement-speed +2.0,
+  jump-strength +2.0 and Glowing.
 - Arena players have 100/100 health and unlimited full hunger. Vanilla heart, armor and hunger sprites are
   hidden by the pack. After five seconds without firing or taking a hit, health regenerates by 5 every second.
 - Join and match start restore the rifle, buffs, health, food and Adventure mode.
@@ -49,8 +50,10 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 - Forty spawn candidates are distributed across three rings.
 - Respawn is weighted toward low-population areas. Nearby players sharply reduce a point's probability,
   and a point used within the last five seconds receives an extra temporary penalty.
-- Consecutive kills play the exact supplied, pre-scaled Valorant 1-5 kill sounds only to the killer. Kill six
-  and above reuse sound 5, death resets to sound 1, and generic hit audio is suppressed on lethal shots.
+- Consecutive kills play the exact supplied, pre-scaled Valorant 1-5 kill sounds only to the killer. The
+  standard OGG Vorbis files are preloaded and the private MASTER-channel cue follows the gunshot transient
+  by four ticks. Kill six and above reuse sound 5, death resets to sound 1, and generic hit audio is
+  suppressed on lethal shots.
 
 ## Arena
 

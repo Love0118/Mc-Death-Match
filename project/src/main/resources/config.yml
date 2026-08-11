@@ -11,6 +11,8 @@ game:
   respawn-delay-seconds: 3
   spawn-protection-ticks: 20
   restart-delay-seconds: 12
+  movement-speed-bonus: 2.0
+  jump-strength-bonus: 2.0
   max-health: 100.0
   regeneration:
     combat-delay-seconds: 5
@@ -40,8 +42,8 @@ rifle:
   unscoped-spread: 0.015
   cooldown-ticks: 30
   magazine-size: 5
-  reload-ticks: 150
-  bolt-sound-delay-ticks: 8
+  reload-ticks: 90
+  bolt-sound-delay-ticks: 14
   zoom-slowness-amplifier: 12
   require-zoom: false
   damage:
@@ -78,5 +80,7 @@ match-result-sounds:
 kill-streak:
   enabled: true
   sound-prefix: sniperpvp:kill.
+  # Let the gunshot transient pass before the private cue, and play it before the 14-tick bolt sound.
+  play-delay-ticks: 4
   volume: 1.0
   pitch: 1.0

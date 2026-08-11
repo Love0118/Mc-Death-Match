@@ -33,8 +33,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 final class GameManager {
     private static final long TICKS_PER_SECOND = 20L;
-    private static final double FIXED_MOVEMENT_SPEED = 0.5;
-    private static final double JUMP_STRENGTH_BONUS = 0.5;
 
     private final SniperPvpPlugin plugin;
     private final Supplier<PluginSettings> settings;
@@ -658,7 +656,7 @@ final class GameManager {
             movementSpeed.removeModifier(movementSpeedKey);
             movementSpeed.addTransientModifier(new AttributeModifier(
                 movementSpeedKey,
-                FIXED_MOVEMENT_SPEED - movementSpeed.getBaseValue(),
+                settings.get().game().movementSpeedBonus(),
                 AttributeModifier.Operation.ADD_NUMBER
             ));
         }
@@ -668,7 +666,7 @@ final class GameManager {
             jumpStrength.removeModifier(jumpStrengthKey);
             jumpStrength.addTransientModifier(new AttributeModifier(
                 jumpStrengthKey,
-                JUMP_STRENGTH_BONUS,
+                settings.get().game().jumpStrengthBonus(),
                 AttributeModifier.Operation.ADD_NUMBER
             ));
         }
