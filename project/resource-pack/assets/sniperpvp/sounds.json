@@ -1,0 +1,52 @@
+{
+  "kill.1": {
+    "sounds": [
+      { "name": "sniperpvp:kill/1", "stream": false }
+    ]
+  },
+  "kill.2": {
+    "sounds": [
+      { "name": "sniperpvp:kill/2", "stream": false }
+    ]
+  },
+  "kill.3": {
+    "sounds": [
+      { "name": "sniperpvp:kill/3", "stream": false }
+    ]
+  },
+  "kill.4": {
+    "sounds": [
+      { "name": "sniperpvp:kill/4", "stream": false }
+    ]
+  },
+  "kill.5": {
+    "sounds": [
+      { "name": "sniperpvp:kill/5", "stream": false }
+    ]
+  },
+  "rifle.fire": {
+    "sounds": [
+      { "name": "sniperpvp:rifle/fire", "stream": false }
+    ]
+  },
+  "rifle.bolt": {
+    "sounds": [
+      { "name": "sniperpvp:rifle/bolt", "stream": false }
+    ]
+  },
+  "rifle.reload": {
+    "sounds": [
+      { "name": "sniperpvp:rifle/reload", "stream": false }
+    ]
+  },
+  "match.victory": {
+    "sounds": [
+      { "name": "sniperpvp:match/victory", "stream": false }
+    ]
+  },
+  "match.defeat": {
+    "sounds": [
+      { "name": "sniperpvp:match/defeat", "stream": false }
+    ]
+  }
+}

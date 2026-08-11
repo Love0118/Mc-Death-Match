@@ -1,0 +1,82 @@
+arena:
+  world-name: sniper_arena
+  auto-build: true
+  teleport-on-join: true
+
+game:
+  auto-start: false
+  clear-inventory-on-equip: true
+  kill-limit: 40
+  match-duration-seconds: 600
+  respawn-delay-seconds: 3
+  spawn-protection-ticks: 20
+  restart-delay-seconds: 12
+  max-health: 100.0
+  regeneration:
+    combat-delay-seconds: 5
+    interval-seconds: 1
+    amount: 5.0
+  end-slow-motion:
+    tick-rate: 2.0
+    duration-seconds: 7
+
+hud:
+  enabled: true
+  # Six cards are arranged 3-vs-3 around the centered timer. TAB always contains everybody.
+  max-visible-players: 6
+  update-interval-ticks: 5
+  show-tab-scores: true
+  max-kill-banners: 3
+  kill-banner-duration-ticks: 60
+  max-kill-log-entries: 5
+  kill-log-duration-ticks: 100
+
+rifle:
+  custom-model-data: 1001
+  item-model: jm:walnut_longline_mk2
+  range: 350.0
+  hitbox-expansion: 0.12
+  # Maximum tangent spread while hip-firing: 0.015 is about 1.5 blocks of offset per 100 blocks.
+  unscoped-spread: 0.015
+  cooldown-ticks: 30
+  magazine-size: 5
+  reload-ticks: 150
+  bolt-sound-delay-ticks: 8
+  zoom-slowness-amplifier: 12
+  require-zoom: false
+  damage:
+    legs: 30.0
+    body: 50.0
+    head: 100.0
+    leg-height-ratio: 0.375
+    head-height-ratio: 0.75
+  tracer:
+    enabled: true
+    spacing: 0.75
+
+sounds:
+  zoom-in: minecraft:item.spyglass.use
+  zoom-out: minecraft:item.spyglass.stop_using
+  fire: sniperpvp:rifle.fire
+  bolt: sniperpvp:rifle.bolt
+  reload: sniperpvp:rifle.reload
+  empty: minecraft:block.lever.click
+  hit: entity.arrow.hit_player
+  zoom-volume: 0.65
+  fire-volume: 3.0
+  mechanical-volume: 1.0
+  hit-volume: 0.8
+  fire-pitch: 0.9
+  bolt-pitch: 1.0
+
+match-result-sounds:
+  victory: sniperpvp:match.victory
+  defeat: sniperpvp:match.defeat
+  volume: 1.0
+  pitch: 1.0
+
+kill-streak:
+  enabled: true
+  sound-prefix: sniperpvp:kill.
+  volume: 1.0
+  pitch: 1.0

@@ -1,0 +1,31 @@
+enabled: true
+publish-on-startup: true
+
+resource-packs:
+  directory: resourcepacks
+  bundled-file: sniper-pvp-1.21.8.zip
+  versions:
+    - version: '1.21.8'
+      file: sniper-pvp-1.21.8.zip
+
+archive:
+  max-bytes: 157286400
+  max-uncompressed-bytes: 536870912
+  max-entries: 50000
+
+dropbox:
+  enabled: false
+  # Blank values use the upstream plugin's public rclone OAuth application.
+  # The refresh token is written only to the ignored runtime config after /darp dropbox finish.
+  app-key: ''
+  app-secret: ''
+  redirect-uri: ''
+  refresh-token: ''
+  directory: /sniper-pvp-resource-packs
+
+delivery:
+  on-join: true
+  join-delay-ticks: 20
+  resend-online-on-publish: true
+  required: true
+  prompt: 저격 PvP 전용 리소스팩을 적용해야 접속할 수 있습니다.

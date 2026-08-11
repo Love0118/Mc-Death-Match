@@ -1,0 +1,8 @@
+settings:
+  allow-end: false
+  warn-on-overload: true
+  spawn-radius: 0
+  query-plugins: false
+worlds:
+  sniper_arena:
+    generator: SniperPvp

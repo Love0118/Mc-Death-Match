@@ -1,0 +1,17 @@
+name: SniperPvp
+version: '1.0.0'
+main: kr.sniperpvp.SniperPvpPlugin
+api-version: '1.21.8'
+load: STARTUP
+description: 300x300 hitscan sniper PvP for Paper 1.21.8.
+author: Jaeyun
+commands:
+  sniper:
+    aliases: [sni, snp]
+    description: Sniper PvP administration command.
+    usage: /sniper <start|stop|give|spawn|status|reload>
+    permission: sniperpvp.admin
+permissions:
+  sniperpvp.admin:
+    description: Allows management of the Sniper PvP game.
+    default: op

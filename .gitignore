@@ -1,0 +1,51 @@
+# Project build output
+project/.build/
+project/target/
+project/dist/
+
+# Paper server binaries and generated runtime
+server/paper-*.jar
+server/cache/
+server/backups/
+server/logs/
+server/libraries/
+server/versions/
+server/sniper_arena/
+server/world/
+server/world_nether/
+server/world_the_end/
+server/crash-reports/
+server/config/
+server/bukkit.yml
+server/server.properties
+server/commands.yml
+server/help.yml
+server/permissions.yml
+server/spigot.yml
+server/version_history.json
+server/plugins/*.jar
+server/plugins/.paper-remapped/
+server/plugins/bStats/
+server/plugins/spark/
+server/plugins/SniperPvp/
+server/plugins/DropboxAutoResourcePack/config.yml
+server/plugins/DropboxAutoResourcePack/generated/
+server/plugins/DropboxAutoResourcePack/resourcepacks/
+
+# Server state and secrets
+server/eula.txt
+server/usercache.json
+server/whitelist.json
+server/ops.json
+server/banned-*.json
+server/.console_history
+server/session.lock
+server/*.log
+server/*.lck
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

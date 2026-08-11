@@ -1,0 +1,60 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        "\ue110": 1,
+        "\ue111": 2,
+        "\ue112": 4,
+        "\ue113": 8,
+        "\ue114": 16,
+        "\ue115": 32,
+        "\ue116": 64,
+        "\ue117": 128,
+        "\ue120": -1,
+        "\ue121": -2,
+        "\ue122": -4,
+        "\ue123": -8,
+        "\ue124": -16,
+        "\ue125": -32,
+        "\ue126": -64,
+        "\ue127": -128
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "sniperpvp:font/hud_card_left.png",
+      "ascent": 14,
+      "height": 16,
+      "chars": ["\ue001"]
+    },
+    {
+      "type": "bitmap",
+      "file": "sniperpvp:font/hud_card_right.png",
+      "ascent": 14,
+      "height": 16,
+      "chars": ["\ue002"]
+    },
+    {
+      "type": "bitmap",
+      "file": "sniperpvp:font/hud_timer.png",
+      "ascent": 14,
+      "height": 16,
+      "chars": ["\ue003"]
+    },
+    {
+      "type": "bitmap",
+      "file": "sniperpvp:font/hud_kill_banner.png",
+      "ascent": 16,
+      "height": 18,
+      "chars": ["\ue004"]
+    },
+    {
+      "type": "bitmap",
+      "file": "sniperpvp:font/hud_rifle_icon.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": ["\ue005"]
+    }
+  ]
+}

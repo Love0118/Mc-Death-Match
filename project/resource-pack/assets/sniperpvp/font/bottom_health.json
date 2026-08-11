@@ -1,0 +1,18 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "sniperpvp:font/bottom_health_bars.png",
+      "ascent": -8409087,
+      "height": 9,
+      "chars": ["\ue200\ue201\ue202\ue203\ue204\ue205\ue206\ue207\ue208\ue209\ue20a"]
+    },
+    {
+      "type": "bitmap",
+      "file": "sniperpvp:font/health_digits.png",
+      "ascent": -8409086,
+      "height": 8,
+      "chars": ["0123456789/"]
+    }
+  ]
+}
