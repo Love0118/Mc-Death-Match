@@ -337,8 +337,11 @@ final class HudManager {
             return created;
         });
         AttributeInstance maximum = player.getAttribute(Attribute.MAX_HEALTH);
-        int maxHealth = (int) Math.ceil(Math.max(1.0, maximum == null ? 20.0 : maximum.getValue()));
-        int health = player.isDead() ? 0 : (int) Math.ceil(Math.max(0.0, player.getHealth()));
+        double maximumHealth = Math.max(1.0, maximum == null ? 20.0 : maximum.getValue());
+        int maxHealth = (int) Math.ceil(maximumHealth + settings.get().game().absorption());
+        int health = player.isDead()
+            ? 0
+            : (int) Math.ceil(Math.max(0.0, player.getHealth() + player.getAbsorptionAmount()));
         HealthSnapshot snapshot = new HealthSnapshot(health, maxHealth);
         if (!snapshot.equals(healthSnapshots.put(player.getUniqueId(), snapshot))) {
             bar.name(HealthHudLayout.title(health, maxHealth));

@@ -8,14 +8,15 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   firing, reloading or changing away from the rifle also drops it. The overlay has no custom crosshair, so
   only Minecraft's crosshair remains. The rifle does not enter vanilla item-use state, so an unmodified
   1.21.8 client still sends left-click attacks.
-- Left click: instant server-side ray trace up to 350 blocks. The first concrete block or player hit wins,
-  so cover cannot be penetrated and no projectile entity is created.
+- Left click: instant server-side ray trace up to 350 blocks. Player hitboxes receive a 0.20-block targeting
+  margin. The first concrete block or player hit wins, so cover cannot be penetrated and no projectile entity
+  is created.
 - Scoped shots are perfectly accurate. Hip-fire uses a uniform 1.5% tangent spread (at most about 1.5
   blocks of offset per 100 blocks of travel).
 - The hitscan trail uses the same white-to-gray dust transition, electric spark and mycelium combination
   as Below the Loop's sniper projectile, sampled every 0.75 blocks and force-sent for clear visibility.
-- Hit height selects exact damage: legs 30, body 50 and head 100. With fixed 100/100 health, a full-health
-  headshot is lethal while body shots require two hits.
+- Hit height selects exact damage: legs 70, body 100 and head 150. Each life starts with 100 health plus
+  50 absorption, so a headshot is lethal while a body shot leaves 50 effective health.
 - The rifle has a 5-round magazine. Firing immediately drops the scope; the supplied Mosin-Nagant bolt
   sound starts after 14 ticks (0.7 seconds), while the next shot remains on the 30-tick (1.5-second) cycle.
   Pressing Q manually reloads any partially used magazine; after round five it automatically performs a
@@ -26,8 +27,10 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   reload line is sent.
 - Potion-based Speed and Jump Boost are not used. Arena players receive final movement-speed 0.25,
   final jump-strength 0.72 and Glowing.
-- Arena players have 100/100 health and unlimited full hunger. Vanilla heart, armor and hunger sprites are
-  hidden by the pack. After five seconds without firing or taking a hit, health regenerates by 5 every second.
+- Arena players have 100 health, a non-regenerating 50-point absorption shield and unlimited full hunger.
+  The bottom HUD displays combined effective health out of 150. Vanilla heart, armor and hunger sprites are
+  hidden by the pack. After five seconds without firing or taking a hit, only normal health regenerates by 5
+  every second.
 - Join and match start restore the rifle, buffs, health, food and Adventure mode.
 - Deathmatch respawn is automatic after exactly three seconds. A manually clicked early respawn is held
   in spectator mode until the same deadline, so it cannot bypass the delay.

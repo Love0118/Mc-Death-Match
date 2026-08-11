@@ -15,6 +15,8 @@ game:
   movement-speed: 0.25
   jump-strength: 0.72
   max-health: 100.0
+  # Refilled only when a life starts; normal regeneration never restores this shield.
+  absorption: 50.0
   regeneration:
     combat-delay-seconds: 5
     interval-seconds: 1
@@ -38,7 +40,8 @@ rifle:
   custom-model-data: 1001
   item-model: jm:walnut_longline_mk2
   range: 350.0
-  hitbox-expansion: 0.12
+  # Expand player hitboxes by this many blocks for hitscan targeting.
+  hitbox-expansion: 0.20
   # Maximum tangent spread while hip-firing: 0.015 is about 1.5 blocks of offset per 100 blocks.
   unscoped-spread: 0.015
   cooldown-ticks: 30
@@ -48,9 +51,9 @@ rifle:
   zoom-slowness-amplifier: 12
   require-zoom: false
   damage:
-    legs: 30.0
-    body: 50.0
-    head: 100.0
+    legs: 70.0
+    body: 100.0
+    head: 150.0
     leg-height-ratio: 0.375
     head-height-ratio: 0.75
   tracer:

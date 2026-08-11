@@ -48,6 +48,7 @@ final class GameManager {
     private final Map<UUID, PlayerHealthState> previousHealthStates = new HashMap<>();
     private final NamespacedKey movementSpeedKey;
     private final NamespacedKey jumpStrengthKey;
+    private final NamespacedKey maxAbsorptionKey;
 
     private BukkitTask clockTask;
     private BukkitTask restartTask;
@@ -75,6 +76,7 @@ final class GameManager {
         this.hud = new HudManager(plugin, settings);
         this.movementSpeedKey = new NamespacedKey(plugin, "fixed_movement_speed");
         this.jumpStrengthKey = new NamespacedKey(plugin, "fixed_jump_strength");
+        this.maxAbsorptionKey = new NamespacedKey(plugin, "fixed_max_absorption");
     }
 
     boolean isRunning() {
@@ -351,7 +353,6 @@ final class GameManager {
         player.setFireTicks(0);
         player.setFreezeTicks(0);
         player.setFallDistance(0.0f);
-        player.setAbsorptionAmount(0.0);
         player.clearActiveItem();
         applyCombatHealth(player);
         nextRegenerationTicks.remove(player.getUniqueId());
@@ -560,13 +561,24 @@ final class GameManager {
         previousHealthStates.computeIfAbsent(player.getUniqueId(), ignored -> new PlayerHealthState(
             maximum.getBaseValue(),
             player.isHealthScaled(),
-            player.getHealthScale()
+            player.getHealthScale(),
+            player.getAbsorptionAmount()
         ));
         maximum.setBaseValue(settings.get().game().maxHealth());
+        AttributeInstance maximumAbsorption = player.getAttribute(Attribute.MAX_ABSORPTION);
+        if (maximumAbsorption != null) {
+            maximumAbsorption.removeModifier(maxAbsorptionKey);
+            maximumAbsorption.addTransientModifier(new AttributeModifier(
+                maxAbsorptionKey,
+                settings.get().game().absorption() - maximumAbsorption.getBaseValue(),
+                AttributeModifier.Operation.ADD_NUMBER
+            ));
+        }
         player.setHealthScaled(true);
         player.setHealthScale(20.0);
         if (!player.isDead()) {
             player.setHealth(maximum.getValue());
+            player.setAbsorptionAmount(settings.get().game().absorption());
         }
     }
 
@@ -575,6 +587,11 @@ final class GameManager {
         if (previous == null) {
             return;
         }
+        AttributeInstance maximumAbsorption = player.getAttribute(Attribute.MAX_ABSORPTION);
+        if (maximumAbsorption != null) {
+            maximumAbsorption.removeModifier(maxAbsorptionKey);
+        }
+        player.setAbsorptionAmount(previous.absorption());
         AttributeInstance maximum = player.getAttribute(Attribute.MAX_HEALTH);
         if (maximum != null) {
             maximum.setBaseValue(previous.maximumHealthBase());
@@ -725,6 +742,11 @@ final class GameManager {
         }
     }
 
-    private record PlayerHealthState(double maximumHealthBase, boolean healthScaled, double healthScale) {
+    private record PlayerHealthState(
+        double maximumHealthBase,
+        boolean healthScaled,
+        double healthScale,
+        double absorption
+    ) {
     }
 }

@@ -11,6 +11,7 @@ class PluginSettingsTest {
         PluginSettings settings = PluginSettings.load(new YamlConfiguration());
 
         assertEquals(100.0, settings.game().maxHealth());
+        assertEquals(50.0, settings.game().absorption());
         assertEquals(5, settings.game().regenerationCombatDelaySeconds());
         assertEquals(1, settings.game().regenerationIntervalSeconds());
         assertEquals(5.0, settings.game().regenerationAmount());
@@ -19,11 +20,12 @@ class PluginSettingsTest {
         assertEquals(0.25, settings.game().movementSpeed());
         assertEquals(0.72, settings.game().jumpStrength());
 
-        assertEquals(30.0, settings.rifle().legDamage());
-        assertEquals(50.0, settings.rifle().bodyDamage());
-        assertEquals(100.0, settings.rifle().headDamage());
+        assertEquals(70.0, settings.rifle().legDamage());
+        assertEquals(100.0, settings.rifle().bodyDamage());
+        assertEquals(150.0, settings.rifle().headDamage());
         assertEquals(0.375, settings.rifle().legHeightRatio());
         assertEquals(0.75, settings.rifle().headHeightRatio());
+        assertEquals(0.20, settings.rifle().hitboxExpansion());
         assertEquals(0.015, settings.rifle().unscopedSpread());
         assertEquals(90, settings.rifle().reloadTicks());
         assertEquals(14, settings.rifle().boltSoundDelayTicks());
