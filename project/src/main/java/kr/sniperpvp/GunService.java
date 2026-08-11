@@ -44,7 +44,6 @@ final class GunService {
     private static final long NANOS_PER_TICK = 50_000_000L;
     private static final long EVENT_DEDUPLICATION_NANOS = 20_000_000L;
     private static final long FEEDBACK_THROTTLE_NANOS = 250_000_000L;
-    private static final long ZOOM_HOLD_TIMEOUT_TICKS = 6L;
     private static final NamespacedKey SCOPE_OVERLAY = NamespacedKey.fromString("sniperpvp:misc/scope");
 
     private final SniperPvpPlugin plugin;
@@ -75,7 +74,7 @@ final class GunService {
         ItemMeta meta = item.getItemMeta();
         meta.displayName(rifleName(rifle.magazineSize(), rifle.magazineSize()));
         meta.lore(List.of(
-            Component.text("우클릭 유지: 줌", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+            Component.text("우클릭: 줌 전환", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
             Component.text("좌클릭: 즉시 발사", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
             Component.text("Q: 재장전", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
             Component.text("엄폐물은 관통하지 않습니다", NamedTextColor.DARK_GRAY)
@@ -106,11 +105,15 @@ final class GunService {
         return marker != null && marker == (byte) 1;
     }
 
-    void maintainZoom(Player player, ItemStack item) {
+    void toggleZoom(Player player, ItemStack item) {
         if (!isRifle(item) || !gameRunning.getAsBoolean() || !arena.isArena(player)) {
             return;
         }
         GunRuntime runtime = runtimeFor(player);
+        if (runtime.scoped) {
+            endZoom(player, true);
+            return;
+        }
         long now = System.nanoTime();
         if (runtime.reloading || now < runtime.readyAtNanos) {
             showUnavailable(player, runtime);
@@ -118,22 +121,19 @@ final class GunService {
             return;
         }
 
-        if (!runtime.scoped) {
-            runtime.previousHelmet = cloneOrNull(player.getInventory().getHelmet());
-            runtime.previousSlowness = player.getPotionEffect(PotionEffectType.SLOWNESS);
-            player.getInventory().setHelmet(createScopeOverlayHelmet());
-            player.addPotionEffect(new PotionEffect(
-                PotionEffectType.SLOWNESS,
-                PotionEffect.INFINITE_DURATION,
-                settings.get().rifle().zoomSlownessAmplifier(),
-                false,
-                false,
-                false
-            ));
-            runtime.scoped = true;
-            playPrivate(player, settings.get().sounds().zoomIn(), settings.get().sounds().zoomVolume(), 1.0);
-        }
-        refreshZoomHold(player, runtime);
+        runtime.previousHelmet = cloneOrNull(player.getInventory().getHelmet());
+        runtime.previousSlowness = player.getPotionEffect(PotionEffectType.SLOWNESS);
+        player.getInventory().setHelmet(createScopeOverlayHelmet());
+        player.addPotionEffect(new PotionEffect(
+            PotionEffectType.SLOWNESS,
+            PotionEffect.INFINITE_DURATION,
+            settings.get().rifle().zoomSlownessAmplifier(),
+            false,
+            false,
+            false
+        ));
+        runtime.scoped = true;
+        playPrivate(player, settings.get().sounds().zoomIn(), settings.get().sounds().zoomVolume(), 1.0);
     }
 
     void endZoom(Player player) {
@@ -293,8 +293,6 @@ final class GunService {
         if (runtime == null) {
             return;
         }
-        cancelTask(runtime.zoomReleaseTask);
-        runtime.zoomReleaseTask = null;
         if (!runtime.scoped) {
             return;
         }
@@ -311,16 +309,6 @@ final class GunService {
         if (playSound) {
             playPrivate(player, settings.get().sounds().zoomOut(), settings.get().sounds().zoomVolume(), 1.0);
         }
-    }
-
-    private void refreshZoomHold(Player player, GunRuntime runtime) {
-        cancelTask(runtime.zoomReleaseTask);
-        runtime.zoomReleaseTask = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            runtime.zoomReleaseTask = null;
-            if (runtimes.get(player.getUniqueId()) == runtime && runtime.scoped) {
-                endZoom(player, true);
-            }
-        }, ZOOM_HOLD_TIMEOUT_TICKS);
     }
 
     private GunRuntime runtimeFor(Player player) {
@@ -649,8 +637,6 @@ final class GunService {
         runtime.reloadProgressTask = null;
         cancelTask(runtime.boltTask);
         runtime.boltTask = null;
-        cancelTask(runtime.zoomReleaseTask);
-        runtime.zoomReleaseTask = null;
     }
 
     private void cancelTask(BukkitTask task) {
@@ -674,8 +660,6 @@ final class GunService {
         private PotionEffect previousSlowness;
         private BukkitTask reloadProgressTask;
         private BukkitTask boltTask;
-        private BukkitTask zoomReleaseTask;
-
         private GunRuntime(int magazineSize) {
             magazine = new RifleMagazine(magazineSize);
         }

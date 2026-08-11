@@ -15,7 +15,7 @@ merge another pack underneath it, then produces `dist/sniper-pvp-1.21.8.zip` and
 - the reference stepped bottom health bar and Orbitron digits, plus transparent vanilla health/hunger sprites
 - a 512x288 (16:9) scope mask without a custom crosshair
 - a custom sniper-rifle font glyph for the global kill log
-- vanilla spyglass zoom-in/zoom-out cues for the custom hold scope
+- vanilla spyglass zoom-in/zoom-out cues for the custom toggle scope
 - the user-supplied Mosin-Nagant bolt-action sound
 - private match victory and defeat sound events
 

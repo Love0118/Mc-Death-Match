@@ -16,8 +16,8 @@ class PluginSettingsTest {
         assertEquals(5.0, settings.game().regenerationAmount());
         assertEquals(2.0, settings.game().endSlowMotionTickRate());
         assertEquals(7, settings.game().endSlowMotionDurationSeconds());
-        assertEquals(2.0, settings.game().movementSpeedBonus());
-        assertEquals(2.0, settings.game().jumpStrengthBonus());
+        assertEquals(0.25, settings.game().movementSpeed());
+        assertEquals(0.72, settings.game().jumpStrength());
 
         assertEquals(30.0, settings.rifle().legDamage());
         assertEquals(50.0, settings.rifle().bodyDamage());

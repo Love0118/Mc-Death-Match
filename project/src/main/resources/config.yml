@@ -11,8 +11,9 @@ game:
   respawn-delay-seconds: 3
   spawn-protection-ticks: 20
   restart-delay-seconds: 12
-  movement-speed-bonus: 2.0
-  jump-strength-bonus: 2.0
+  # Final attribute values while participating in a match, not additive bonuses.
+  movement-speed: 0.25
+  jump-strength: 0.72
   max-health: 100.0
   regeneration:
     combat-delay-seconds: 5

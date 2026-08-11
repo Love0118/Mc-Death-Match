@@ -105,7 +105,7 @@ final class SniperListener implements Listener {
         if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
             event.setCancelled(true);
             event.getPlayer().clearActiveItem();
-            gun.maintainZoom(event.getPlayer(), event.getItem());
+            gun.toggleZoom(event.getPlayer(), event.getItem());
             return;
         }
         if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {

@@ -4,9 +4,10 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 
 ## Implemented gameplay
 
-- Hold right click: keep a full-screen scope overlay and narrowed FOV active; releasing right click drops
-  the scope. The overlay has no custom crosshair, so only Minecraft's crosshair remains. The rifle does not
-  enter vanilla item-use state, so an unmodified 1.21.8 client still sends left-click attacks.
+- Right click toggles the full-screen scope overlay and narrowed FOV. Right click again to leave the scope;
+  firing, reloading or changing away from the rifle also drops it. The overlay has no custom crosshair, so
+  only Minecraft's crosshair remains. The rifle does not enter vanilla item-use state, so an unmodified
+  1.21.8 client still sends left-click attacks.
 - Left click: instant server-side ray trace up to 350 blocks. The first concrete block or player hit wins,
   so cover cannot be penetrated and no projectile entity is created.
 - Scoped shots are perfectly accurate. Hip-fire uses a uniform 1.5% tangent spread (at most about 1.5
@@ -23,8 +24,8 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   generic firearm reload asset.
 - Ammo and real-time reload progress are kept in the rifle item name only; no duplicate action-bar ammo or
   reload line is sent.
-- Potion-based Speed and Jump Boost are not used. Arena players receive fixed movement-speed +2.0,
-  jump-strength +2.0 and Glowing.
+- Potion-based Speed and Jump Boost are not used. Arena players receive final movement-speed 0.25,
+  final jump-strength 0.72 and Glowing.
 - Arena players have 100/100 health and unlimited full hunger. Vanilla heart, armor and hunger sprites are
   hidden by the pack. After five seconds without firing or taking a hit, health regenerates by 5 every second.
 - Join and match start restore the rifle, buffs, health, food and Adventure mode.

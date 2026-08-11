@@ -656,7 +656,7 @@ final class GameManager {
             movementSpeed.removeModifier(movementSpeedKey);
             movementSpeed.addTransientModifier(new AttributeModifier(
                 movementSpeedKey,
-                settings.get().game().movementSpeedBonus(),
+                settings.get().game().movementSpeed() - movementSpeed.getBaseValue(),
                 AttributeModifier.Operation.ADD_NUMBER
             ));
         }
@@ -666,7 +666,7 @@ final class GameManager {
             jumpStrength.removeModifier(jumpStrengthKey);
             jumpStrength.addTransientModifier(new AttributeModifier(
                 jumpStrengthKey,
-                settings.get().game().jumpStrengthBonus(),
+                settings.get().game().jumpStrength() - jumpStrength.getBaseValue(),
                 AttributeModifier.Operation.ADD_NUMBER
             ));
         }
