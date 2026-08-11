@@ -11,7 +11,7 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 - Left click: instant server-side ray trace up to 350 blocks. Player hitboxes receive a 0.20-block targeting
   margin. The first concrete block or player hit wins, so cover cannot be penetrated and no projectile entity
   is created.
-- Scoped shots are perfectly accurate. Hip-fire uses a uniform 1.5% tangent spread (at most about 1.5
+- Scoped shots are perfectly accurate. Hip-fire uses a uniform 5% tangent spread (at most about 5
   blocks of offset per 100 blocks of travel).
 - The hitscan trail uses the same white-to-gray dust transition, electric spark and mycelium combination
   as Below the Loop's sniper projectile, sampled every 0.75 blocks and force-sent for clear visibility.
@@ -26,7 +26,7 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 - Ammo and real-time reload progress are kept in the rifle item name only; no duplicate action-bar ammo or
   reload line is sent.
 - Potion-based Speed and Jump Boost are not used. Arena players receive final movement-speed 0.25,
-  final jump-strength 0.72 and Glowing.
+  final jump-strength 0.72, player scale 1.5 and Glowing.
 - Arena players have 100 health, a non-regenerating 50-point absorption shield and unlimited full hunger.
   The bottom HUD displays combined effective health out of 150. Vanilla heart, armor and hunger sprites are
   hidden by the pack. After five seconds without firing or taking a hit, only normal health regenerates by 5

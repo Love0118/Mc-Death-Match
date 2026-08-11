@@ -48,6 +48,7 @@ final class GameManager {
     private final Map<UUID, PlayerHealthState> previousHealthStates = new HashMap<>();
     private final NamespacedKey movementSpeedKey;
     private final NamespacedKey jumpStrengthKey;
+    private final NamespacedKey playerScaleKey;
     private final NamespacedKey maxAbsorptionKey;
 
     private BukkitTask clockTask;
@@ -76,6 +77,7 @@ final class GameManager {
         this.hud = new HudManager(plugin, settings);
         this.movementSpeedKey = new NamespacedKey(plugin, "fixed_movement_speed");
         this.jumpStrengthKey = new NamespacedKey(plugin, "fixed_jump_strength");
+        this.playerScaleKey = new NamespacedKey(plugin, "fixed_player_scale");
         this.maxAbsorptionKey = new NamespacedKey(plugin, "fixed_max_absorption");
     }
 
@@ -687,6 +689,16 @@ final class GameManager {
                 AttributeModifier.Operation.ADD_NUMBER
             ));
         }
+
+        AttributeInstance playerScale = player.getAttribute(Attribute.SCALE);
+        if (playerScale != null) {
+            playerScale.removeModifier(playerScaleKey);
+            playerScale.addTransientModifier(new AttributeModifier(
+                playerScaleKey,
+                settings.get().game().playerScale() - playerScale.getBaseValue(),
+                AttributeModifier.Operation.ADD_NUMBER
+            ));
+        }
     }
 
     private void removeCombatMovement(Player player) {
@@ -697,6 +709,10 @@ final class GameManager {
         AttributeInstance jumpStrength = player.getAttribute(Attribute.JUMP_STRENGTH);
         if (jumpStrength != null) {
             jumpStrength.removeModifier(jumpStrengthKey);
+        }
+        AttributeInstance playerScale = player.getAttribute(Attribute.SCALE);
+        if (playerScale != null) {
+            playerScale.removeModifier(playerScaleKey);
         }
     }
 

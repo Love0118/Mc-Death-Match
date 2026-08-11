@@ -14,6 +14,7 @@ game:
   # Final attribute values while participating in a match, not additive bonuses.
   movement-speed: 0.25
   jump-strength: 0.72
+  player-scale: 1.5
   max-health: 100.0
   # Refilled only when a life starts; normal regeneration never restores this shield.
   absorption: 50.0
@@ -42,8 +43,8 @@ rifle:
   range: 350.0
   # Expand player hitboxes by this many blocks for hitscan targeting.
   hitbox-expansion: 0.20
-  # Maximum tangent spread while hip-firing: 0.015 is about 1.5 blocks of offset per 100 blocks.
-  unscoped-spread: 0.015
+  # Maximum tangent spread while hip-firing: 0.05 is about 5 blocks of offset per 100 blocks.
+  unscoped-spread: 0.05
   cooldown-ticks: 30
   magazine-size: 5
   reload-ticks: 90

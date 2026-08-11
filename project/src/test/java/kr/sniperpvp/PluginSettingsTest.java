@@ -19,6 +19,7 @@ class PluginSettingsTest {
         assertEquals(7, settings.game().endSlowMotionDurationSeconds());
         assertEquals(0.25, settings.game().movementSpeed());
         assertEquals(0.72, settings.game().jumpStrength());
+        assertEquals(1.5, settings.game().playerScale());
 
         assertEquals(70.0, settings.rifle().legDamage());
         assertEquals(100.0, settings.rifle().bodyDamage());
@@ -26,7 +27,7 @@ class PluginSettingsTest {
         assertEquals(0.375, settings.rifle().legHeightRatio());
         assertEquals(0.75, settings.rifle().headHeightRatio());
         assertEquals(0.20, settings.rifle().hitboxExpansion());
-        assertEquals(0.015, settings.rifle().unscopedSpread());
+        assertEquals(0.05, settings.rifle().unscopedSpread());
         assertEquals(90, settings.rifle().reloadTicks());
         assertEquals(14, settings.rifle().boltSoundDelayTicks());
 
