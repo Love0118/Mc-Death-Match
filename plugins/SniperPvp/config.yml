@@ -47,7 +47,7 @@ rifle:
   unscoped-spread: 0.05
   # Fixed horizontal hitscan offset in blocks. Positive moves the ray right; negative moves it left.
   # /sni reload applies this immediately without restarting the server.
-  horizontal-aim-offset-blocks: 0.25
+  horizontal-aim-offset-blocks: 0.03
   cooldown-ticks: 30
   magazine-size: 5
   reload-ticks: 90
