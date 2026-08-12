@@ -24,6 +24,7 @@ server/permissions.yml
 server/spigot.yml
 server/version_history.json
 server/plugins/*.jar
+server/plugins/
 server/plugins/.paper-remapped/
 server/plugins/bStats/
 server/plugins/spark/

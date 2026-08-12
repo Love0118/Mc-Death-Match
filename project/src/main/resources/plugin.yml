@@ -1,9 +1,9 @@
 name: SniperPvp
 version: '1.0.0'
 main: kr.sniperpvp.SniperPvpPlugin
-api-version: '1.21.8'
+api-version: '26.2'
 load: STARTUP
-description: 300x300 hitscan sniper PvP for Paper 1.21.8.
+description: 300x300 hitscan sniper PvP for Paper 26.2.
 author: Jaeyun
 commands:
   sniper:

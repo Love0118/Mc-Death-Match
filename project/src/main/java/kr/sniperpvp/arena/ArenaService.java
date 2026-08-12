@@ -9,7 +9,7 @@ import kr.sniperpvp.PluginSettings;
 import kr.sniperpvp.SniperPvpPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -131,22 +131,21 @@ public final class ArenaService implements Listener {
     }
 
     private void configureWorld(World world) {
-        world.setPVP(true);
         world.setDifficulty(Difficulty.PEACEFUL);
-        world.setSpawnFlags(false, false);
         world.setTime(6000L);
         world.setStorm(false);
         world.setThundering(false);
         world.setSpawnLocation(0, ArenaConstants.FLOOR_Y + 5, 0, 0.0f);
-        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-        world.setGameRule(GameRule.DO_FIRE_TICK, false);
-        world.setGameRule(GameRule.KEEP_INVENTORY, true);
-        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
-        world.setGameRule(GameRule.FALL_DAMAGE, false);
-        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        world.setGameRule(GameRule.SPAWN_RADIUS, 0);
+        world.setGameRule(GameRules.ADVANCE_TIME, false);
+        world.setGameRule(GameRules.ADVANCE_WEATHER, false);
+        world.setGameRule(GameRules.PVP, true);
+        world.setGameRule(GameRules.SPAWN_MOBS, false);
+        world.setGameRule(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER, 0);
+        world.setGameRule(GameRules.KEEP_INVENTORY, true);
+        world.setGameRule(GameRules.IMMEDIATE_RESPAWN, false);
+        world.setGameRule(GameRules.FALL_DAMAGE, false);
+        world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
+        world.setGameRule(GameRules.RESPAWN_RADIUS, 0);
 
         WorldBorder border = world.getWorldBorder();
         border.setCenter(0.0, 0.0);

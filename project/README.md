@@ -1,4 +1,4 @@
-# Sniper PvP server (Paper 1.21.8)
+# Sniper PvP server (Paper 26.2, clients 1.21.8-26.2)
 
 A small automatic-respawn deathmatch server built around a server-side hitscan rifle.
 
@@ -8,7 +8,7 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   Firing keeps the scope while rounds remain; an empty magazine, manual reload or changing away from the rifle
   drops it. The overlay has no custom crosshair, so
   only Minecraft's crosshair remains. The rifle does not enter vanilla item-use state, so an unmodified
-  1.21.8 client still sends left-click attacks.
+  supported client still sends left-click attacks.
 - Left click: instant server-side ray trace up to 350 blocks. Player hitboxes receive a 0.20-block targeting
   margin. The first concrete block or player hit wins, so cover cannot be penetrated and no projectile entity
   is created. The vanilla melee swing is not broadcast to other players, and the shooter's unavoidable local
@@ -21,7 +21,7 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   as Below the Loop's sniper projectile, sampled every 0.75 blocks and force-sent for clear visibility.
 - Hit height selects exact damage: legs 70, body 100 and head 150. Each life starts with 100 health plus
   50 absorption, so a headshot is lethal while a body shot leaves 50 effective health.
-- The rifle has a 5-round magazine. Firing immediately drops the scope; the supplied Mosin-Nagant bolt
+- The rifle has a 5-round magazine. The supplied Mosin-Nagant bolt
   sound starts after 14 ticks (0.7 seconds), while the next shot remains on the 30-tick (1.5-second) cycle.
   Pressing Q manually reloads any partially used magazine; after round five it automatically performs a
   90-tick (4.5-second) full reload.
@@ -44,7 +44,7 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 - A Valorant-inspired top HUD places the timer in the center and ranked nickname/kill cards on both sides.
   The full score is also visible in TAB, with no display entities.
 - The lower health HUD is the same stepped green/yellow/red bar and Orbitron number treatment used by
-  `spear-vs-zombie-main`, ported to the 1.21.8 text shader.
+  `spear-vs-zombie-main`, ported to each supported client's text shader interface.
 - Each killer gets a private FIFO kill feed. It shows up to three victim-name banners; a fourth removes
   the oldest, and every banner expires after three seconds.
 - Every participant also sees a five-entry global kill log in the upper-right HUD. Killer names are `&a`
@@ -74,7 +74,7 @@ SniperPvp JAR installed, or Paper would create ordinary terrain under the same w
 
 ## Build
 
-Requirements: Java 21 or newer, Maven, and internet access for the first dependency build.
+Requirements: Java 25 or newer, Maven, and internet access for the first dependency build.
 
 ```powershell
 .\project\Build-Server.ps1
@@ -82,12 +82,26 @@ Requirements: Java 21 or newer, Maven, and internet access for the first depende
 
 This command:
 
-1. runs the SniperPvp tests and deploys `server/plugins/SniperPvp-1.0.0.jar`;
-2. checks out the `resource-pack-only` implementation at pinned commit
-   `e69c6f33023edeb0d704b64562b57c9611cb2b35`, runs its tests, and installs
-   `server/plugins/DropboxAutoResourcePack-1.1.0.jar`;
-3. builds the format-64 pack and copies it to
-   `server/plugins/DropboxAutoResourcePack/resourcepacks/sniper-pvp-1.21.8.zip`.
+1. installs the pinned Paper 26.2 build, ViaVersion/ViaBackwards 5.11.0 and NoChatReports 2.7.8 after
+   checking every SHA-256;
+2. runs the SniperPvp tests and deploys `server/plugins/SniperPvp-1.0.0.jar`;
+3. checks out the `resource-pack-only` implementation at pinned commit
+   `172643a4483306b2af1fff237309e4d800dea0f2`, runs its normal and Paper 26.2 compatibility tests,
+   and installs `server/plugins/DropboxAutoResourcePack-1.1.1.jar`;
+4. builds five deterministic resource-pack ZIPs for the client protocol families below and copies them to
+   `server/plugins/DropboxAutoResourcePack/resourcepacks/`.
+
+| Client version | Protocol | Resource-pack format | Built ZIP |
+| --- | ---: | ---: | --- |
+| 1.21.8 | 772 | 64 | `sniper-pvp-1.21.8.zip` |
+| 1.21.9-1.21.10 | 773 | 69 | `sniper-pvp-1.21.9-1.21.10.zip` |
+| 1.21.11 | 774 | 75 | `sniper-pvp-1.21.11.zip` |
+| 26.1, 26.1.1, 26.1.2 | 775 | 84 | `sniper-pvp-26.1.x.zip` |
+| 26.2 | 776 | 88 | `sniper-pvp-26.2.zip` |
+
+The 1.21.8 pack keeps the legacy text shader and metadata schema. Later packs use their matching
+versioned metadata, and 26.2 uses the unified `text.vsh` entry point. A pack is never reused across an
+incompatible shader or metadata boundary.
 
 The supplied `walnut-longline-mk2-low-compact-scope` rifle is already embedded as
 `jm:walnut_longline_mk2`. An optional additional base pack can still be merged underneath:
@@ -102,13 +116,17 @@ The Maven project lives under `project/`; Paper runs only under the sibling `ser
 Build artifacts are copied across by `project/Build-Server.ps1`, so worlds, logs and OAuth secrets never
 mix with source files.
 
+NoChatReports is upgraded from 2.7.7 to the official 2.7.8 release, whose 26.2 NMS provider is loaded during
+the migration smoke test.
+
 ```text
 Start-Server.bat
 ```
 
 The user explicitly authorized EULA acceptance for this workspace. The batch launcher writes
-`server/eula.txt` with `eula=true`, then starts `server/paper-1.21.8-60.jar` with 2-4 GB on port
-25565 by default. The server accepts transfer packets and allows up to 50 simultaneous players.
+`server/eula.txt` with `eula=true`, then starts `server/paper-26.2-112.jar` with 8 GB on port 25565 by
+default. The server accepts transfer packets and allows up to 50 simultaneous players. The launcher makes a
+one-time ZIP backup before Paper 26.2 opens an existing `sniper_arena`; do not downgrade that migrated world.
 
 In the server console or as an operator:
 
@@ -118,8 +136,8 @@ In the server console or as an operator:
 /darp status
 ```
 
-After authorization, the plugin uploads the local ZIP, downloads it back, verifies SHA-1, metadata and
-archive safety, and only then sends it as a required pack to 1.21.8 clients. The refresh token lives in
+After authorization, the plugin uploads all five local ZIPs, downloads them back, verifies SHA-1, metadata and
+archive safety, and only then selects the required pack from the joining player's client protocol. The refresh token lives in
 the ignored runtime file `server/plugins/DropboxAutoResourcePack/config.yml`; never commit or share it.
 
 ## Commands

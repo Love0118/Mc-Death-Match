@@ -10,12 +10,12 @@
     <packaging>jar</packaging>
 
     <name>SniperPvp</name>
-    <description>Paper 1.21.8 hitscan sniper PvP server plugin.</description>
+    <description>Paper 26.2 hitscan sniper PvP server plugin with ViaBackwards client support.</description>
 
     <properties>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <paper.version>1.21.8-R0.1-SNAPSHOT</paper.version>
+        <paper.version>26.2.build.112-stable</paper.version>
         <junit.version>5.11.4</junit.version>
     </properties>
 

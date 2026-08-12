@@ -1,14 +1,15 @@
 # Sniper PvP resource-pack overlay
 
-This directory is the complete server-owned 1.21.8 pack. `tools/Build-ResourcePack.ps1` can optionally
-merge another pack underneath it, then produces `dist/sniper-pvp-1.21.8.zip` and the runtime Dropbox copy.
+This directory contains the common server-owned assets. `tools/Build-ResourcePack.ps1` combines them with
+the metadata and core-text-shader variants under `resource-pack-variants/`, then produces five version-aware
+ZIPs and their runtime Dropbox copies.
 
 ## Already included
 
 - `sniperpvp:kill.1` through `sniperpvp:kill.5`
 - standard mono 48 kHz OGG Vorbis audio converted from the five supplied MP3 files and preloaded by Minecraft
 - source waveform volume preserved during OGG encoding
-- pack format `64`, restricted to Minecraft 1.21.8
+- pack formats `64`, `69`, `75`, `84` and `88` for Minecraft 1.21.8 through 26.2
 - the supplied `jm:walnut_longline_mk2` item model, palette and item definition
 - separate horizontal third-person rifle transforms without changing the established first-person view
 - Valorant-inspired nickname/kill cards, centered timer, private three-entry banners and a global upper-right kill log
@@ -19,6 +20,19 @@ merge another pack underneath it, then produces `dist/sniper-pvp-1.21.8.zip` and
 - vanilla spyglass zoom-in/zoom-out cues for the custom toggle scope
 - the user-supplied Mosin-Nagant bolt-action sound
 - private match victory and defeat sound events
+
+## Version matrix
+
+| Clients | Protocol | Pack format | Text shader |
+| --- | ---: | ---: | --- |
+| 1.21.8 | 772 | 64.0 | `core/rendertype_text.vsh`, GLSL 150 |
+| 1.21.9, 1.21.10 | 773 | 69.0 | `core/rendertype_text.vsh`, GLSL 330 |
+| 1.21.11 | 774 | 75.0 | `core/rendertype_text.vsh`, GLSL 330 |
+| 26.1, 26.1.1, 26.1.2 | 775 | 84.0 | `core/rendertype_text.vsh` with `sample_lightmap` |
+| 26.2 | 776 | 88.0 | unified `core/text.vsh` with `IS_GUI` handling |
+
+Versions sharing one handshake protocol must share one ZIP because the server cannot distinguish them at
+login. The build matrix is `resource-pack-variants/matrix.json`.
 
 The plugin clamps every streak sound tier with `min(streak, 5)`, so six kills and above keep playing
 `sniperpvp:kill.5`.

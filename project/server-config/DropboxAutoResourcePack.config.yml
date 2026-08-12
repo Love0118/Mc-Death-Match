@@ -3,10 +3,19 @@ publish-on-startup: true
 
 resource-packs:
   directory: resourcepacks
-  bundled-file: sniper-pvp-1.21.8.zip
+  # Deliberately does not match a mapped file; this project builds every ZIP explicitly.
+  bundled-file: unused-bundled-pack.zip
   versions:
     - version: '1.21.8'
       file: sniper-pvp-1.21.8.zip
+    - versions: ['1.21.9', '1.21.10']
+      file: sniper-pvp-1.21.9-1.21.10.zip
+    - version: '1.21.11'
+      file: sniper-pvp-1.21.11.zip
+    - versions: ['26.1', '26.1.1', '26.1.2']
+      file: sniper-pvp-26.1.x.zip
+    - version: '26.2'
+      file: sniper-pvp-26.2.zip
 
 archive:
   max-bytes: 157286400

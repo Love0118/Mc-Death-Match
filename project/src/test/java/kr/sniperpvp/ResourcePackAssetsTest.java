@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 class ResourcePackAssetsTest {
     private static final Path PACK_ROOT = Path.of("resource-pack");
+    private static final Path VARIANT_ROOT = Path.of("resource-pack-variants");
     private static final Map<Integer, String> KILL_SOUND_SHA256 = Map.of(
         1, "50de4010f88be0a3011d60af67f29cec9acb6cd43a258fcd5150dc3cb135fca8",
         2, "a40e268608cfdb06c94235771a86ff19b0a1eaf344cfca6fb181e499da649bc0",
@@ -27,10 +28,21 @@ class ResourcePackAssetsTest {
     );
 
     @Test
-    void metadataTargetsMinecraftOneTwentyOneEight() throws IOException {
-        String metadata = Files.readString(PACK_ROOT.resolve("pack.mcmeta"));
-        assertTrue(metadata.contains("\"pack_format\": 64"));
-        assertTrue(metadata.contains("\"supported_formats\": [64, 64]"));
+    void versionMatrixCoversEverySupportedProtocolAndPackFormat() throws IOException {
+        String matrix = Files.readString(VARIANT_ROOT.resolve("matrix.json"));
+        for (String version : java.util.List.of(
+            "1.21.8", "1.21.9", "1.21.10", "1.21.11", "26.1", "26.1.1", "26.1.2", "26.2"
+        )) {
+            assertTrue(matrix.contains("\"" + version + "\""), version);
+        }
+        for (int protocol = 772; protocol <= 776; protocol++) {
+            assertEquals(1, occurrences(matrix, "\"protocol\": " + protocol));
+        }
+        for (int format : java.util.List.of(64, 69, 75, 84, 88)) {
+            assertEquals(1, occurrences(matrix, "\"pack_format\": [" + format + ", 0]"));
+        }
+        assertTrue(matrix.contains("sniper-pvp-1.21.9-1.21.10.zip"));
+        assertTrue(matrix.contains("sniper-pvp-26.1.x.zip"));
     }
 
     @Test
@@ -124,12 +136,25 @@ class ResourcePackAssetsTest {
         assertEquals(264, healthDigits.getWidth());
         assertEquals(32, healthDigits.getHeight());
 
-        String textShader = Files.readString(PACK_ROOT.resolve(
-            "assets/minecraft/shaders/core/rendertype_text.vsh"
+        for (String relative : java.util.List.of(
+            "shaders/1.21.8/rendertype_text.vsh",
+            "shaders/1.21.9/rendertype_text.vsh",
+            "shaders/26.1/rendertype_text.vsh",
+            "shaders/26.2/text.vsh"
+        )) {
+            String textShader = Files.readString(VARIANT_ROOT.resolve(relative));
+            assertTrue(textShader.contains("BOTTOM_HEALTH_SHADER_ID 2"), relative);
+            assertTrue(textShader.contains("pos.y += ui.y - 40.0"), relative);
+        }
+        String legacyTextShader = Files.readString(VARIANT_ROOT.resolve(
+            "shaders/1.21.8/rendertype_text.vsh"
         ));
-        assertTrue(textShader.contains("#version 150"));
-        assertTrue(textShader.contains("BOTTOM_HEALTH_SHADER_ID 2"));
-        assertTrue(textShader.contains("pos.y += ui.y - 40.0"));
+        assertTrue(legacyTextShader.contains("#version 150"));
+        String twentySixTwoTextShader = Files.readString(VARIANT_ROOT.resolve(
+            "shaders/26.2/text.vsh"
+        ));
+        assertTrue(twentySixTwoTextShader.contains("#ifdef IS_GUI"));
+        assertTrue(twentySixTwoTextShader.contains("sample_lightmap(Sampler2, UV2)"));
 
         var hiddenBar = ImageIO.read(PACK_ROOT.resolve(
             "assets/minecraft/textures/gui/sprites/boss_bar/white_background.png"
