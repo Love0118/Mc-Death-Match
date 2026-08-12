@@ -5,6 +5,8 @@
 /logs/
 /backups/
 /crash-reports/
+/.paper-26.2-migration-backup.done
+/eula.txt
 /plugins/.paper-remapped/
 /plugins/bStats/
 /plugins/spark/

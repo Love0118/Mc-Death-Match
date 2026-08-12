@@ -1,0 +1,5 @@
+pass-original-item-name-to-resource-packs: true
+always-show-original-mob-name: true
+add-custom-enchants-into-lore: true
+map-custom-model-data: true
+suppress-emulation-warnings: false
