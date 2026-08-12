@@ -60,8 +60,8 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   and a point used within the last five seconds receives an extra temporary penalty.
 - Consecutive kills play the exact supplied, full-volume Valorant 1-5 kill sounds only to the killer. The
   standard OGG Vorbis files are preloaded and the private self-emitted cue follows the gunshot transient
-  by four ticks. Kill six and above reuse sound 5, death resets to sound 1, and generic hit audio is
-  suppressed on lethal shots.
+  by four ticks. Kill six and above reuse sound 5, death resets to sound 1, and the private hit-confirmation
+  cue plays only on headshots, including lethal headshots.
 
 ## Arena
 

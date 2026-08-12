@@ -537,11 +537,13 @@ final class GunService {
         boolean killed = target.isDead();
         if (!killed) {
             latestHits.remove(target.getUniqueId(), hit);
+        }
+        if (headshot) {
             playPrivate(
                 shooter,
                 settings.get().sounds().hit(),
                 settings.get().sounds().hitVolume(),
-                headshot ? 1.35 : 1.0
+                1.35
             );
         }
     }

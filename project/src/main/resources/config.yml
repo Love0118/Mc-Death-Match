@@ -71,6 +71,7 @@ sounds:
   bolt: sniperpvp:rifle.bolt
   reload: sniperpvp:rifle.reload
   empty: minecraft:block.lever.click
+  # Private headshot confirmation; body and leg hits do not play this cue.
   hit: entity.arrow.hit_player
   zoom-volume: 0.65
   fire-volume: 3.0
