@@ -1,13 +1,42 @@
 [CmdletBinding()]
 param(
     [int]$MinMemoryGB = 8,
-    [int]$MaxMemoryGB = 8
+    [int]$MaxMemoryGB = 8,
+    [switch]$ValidateOnly
 )
 
 $ErrorActionPreference = 'Stop'
 $serverRoot = $PSScriptRoot
 if ($MinMemoryGB -le 0 -or $MaxMemoryGB -lt $MinMemoryGB) {
     throw 'Memory values must satisfy 0 < MinMemoryGB <= MaxMemoryGB'
+}
+
+function Get-JavaVersionText {
+    param([string]$Executable)
+
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = $Executable
+    $startInfo.Arguments = '-version'
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $startInfo
+    try {
+        if (-not $process.Start()) {
+            return ''
+        }
+        $standardOutput = $process.StandardOutput.ReadToEnd()
+        $standardError = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        return $standardOutput + [Environment]::NewLine + $standardError
+    } catch {
+        return ''
+    } finally {
+        $process.Dispose()
+    }
 }
 
 function Resolve-Java25 {
@@ -34,7 +63,7 @@ function Resolve-Java25 {
         if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) {
             continue
         }
-        $versionText = (& $candidate -version 2>&1 | Out-String)
+        $versionText = Get-JavaVersionText $candidate
         if ($versionText -match '(?:openjdk|java) version "(?<major>\d+)' -and
             [int]$Matches.major -ge 25) {
             return [System.IO.Path]::GetFullPath($candidate)
@@ -49,6 +78,12 @@ $paperJar = Get-ChildItem -LiteralPath $serverRoot -Filter 'paper-26.2-*.jar' -F
     Select-Object -First 1
 if ($null -eq $paperJar) {
     throw "paper-26.2-*.jar was not found under $serverRoot"
+}
+
+if ($ValidateOnly) {
+    Write-Host "Java 25 validation passed: $javaExecutable" -ForegroundColor Green
+    Write-Host "Paper runtime found: $($paperJar.Name)" -ForegroundColor Green
+    return
 }
 
 [System.IO.File]::WriteAllText(
