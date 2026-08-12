@@ -4,16 +4,17 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 
 ## Implemented gameplay
 
-- Right click toggles the full-screen scope overlay and narrowed FOV. Right click again to leave the scope;
-  firing, reloading or changing away from the rifle also drops it. The overlay has no custom crosshair, so
+- Right click toggles the full-screen scope overlay and narrowed FOV. Right click again to leave the scope.
+  Firing keeps the scope while rounds remain; an empty magazine, manual reload or changing away from the rifle
+  drops it. The overlay has no custom crosshair, so
   only Minecraft's crosshair remains. The rifle does not enter vanilla item-use state, so an unmodified
   1.21.8 client still sends left-click attacks.
 - Left click: instant server-side ray trace up to 350 blocks. Player hitboxes receive a 0.20-block targeting
   margin. The first concrete block or player hit wins, so cover cannot be penetrated and no projectile entity
   is created.
 - Scoped shots are perfectly accurate. Hip-fire uses a uniform 5% tangent spread (at most about 5
-  blocks of offset per 100 blocks of travel). `rifle.horizontal-aim-compensation-degrees` corrects
-  horizontal client-side aim bias; positive values move hits right and `/sni reload` applies changes immediately.
+  blocks of offset per 100 blocks of travel). `rifle.horizontal-aim-offset-blocks` shifts the parallel
+  hitscan ray by a fixed amount; positive values move it right and `/sni reload` applies changes immediately.
 - The hitscan trail uses the same white-to-gray dust transition, electric spark and mycelium combination
   as Below the Loop's sniper projectile, sampled every 0.75 blocks and force-sent for clear visibility.
 - Hit height selects exact damage: legs 70, body 100 and head 150. Each life starts with 100 health plus

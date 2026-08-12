@@ -214,7 +214,6 @@ final class GunService {
         }
 
         boolean scopedShot = runtime.scoped;
-        endZoom(shooter, true);
         playWorld(
             shooter,
             settings.get().sounds().fire(),
@@ -224,6 +223,7 @@ final class GunService {
         fireHitscan(shooter, rifle, scopedShot);
 
         if (runtime.magazine.isEmpty()) {
+            endZoom(shooter, true);
             beginReload(shooter, runtime, now, rifle);
         } else {
             scheduleBolt(shooter, runtime, rifle.boltSoundDelayTicks());
@@ -482,7 +482,9 @@ final class GunService {
 
     private void fireHitscan(Player shooter, PluginSettings.RifleSettings rifle, boolean scopedShot) {
         org.bukkit.Location start = shooter.getEyeLocation();
-        start.setYaw(start.getYaw() + (float) rifle.horizontalAimCompensationDegrees());
+        double yawRadians = Math.toRadians(start.getYaw());
+        Vector horizontalRight = new Vector(-Math.cos(yawRadians), 0.0, -Math.sin(yawRadians));
+        start.add(horizontalRight.multiply(rifle.horizontalAimOffsetBlocks()));
         Vector direction = start.getDirection().normalize();
         if (!scopedShot && rifle.unscopedSpread() > 0.0) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
