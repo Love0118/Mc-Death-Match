@@ -1,0 +1,32 @@
+# Runtime-generated Paper files
+/cache/
+/libraries/
+/versions/
+/logs/
+/backups/
+/crash-reports/
+/plugins/.paper-remapped/
+/plugins/bStats/
+/plugins/spark/
+/plugins/DropboxAutoResourcePack/generated/
+
+# Secrets and local operator state
+/plugins/DropboxAutoResourcePack/config.yml
+/ops.json
+/usercache.json
+/whitelist.json
+/banned-ips.json
+/banned-players.json
+/.console_history
+
+# Per-player world state
+/sniper_arena/playerdata/
+/sniper_arena/stats/
+/sniper_arena/advancements/
+/sniper_arena/data/scoreboard.dat
+/sniper_arena/session.lock
+
+# Miscellaneous runtime locks and logs
+*.log
+*.lck
+session.lock
