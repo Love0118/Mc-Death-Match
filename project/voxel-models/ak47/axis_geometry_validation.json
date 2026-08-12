@@ -16,19 +16,19 @@
     {
       "name": "barrel_bore",
       "axis": "x",
-      "length": 12,
+      "length": 14,
       "ring_cells": 8,
       "hole_cells": 1,
-      "generated_voxels": 96,
+      "generated_voxels": 112,
       "passed": true
     },
     {
       "name": "muzzle_bore",
       "axis": "x",
-      "length": 4,
-      "ring_cells": 20,
+      "length": 2,
+      "ring_cells": 8,
       "hole_cells": 1,
-      "generated_voxels": 80,
+      "generated_voxels": 16,
       "passed": true
     }
   ],

@@ -1,25 +1,23 @@
 # AK-47 multiview review
 
-The final comparison uses the reference panels in muzzle, true-side, and top
-order. The compiler's top camera was rolled 90 degrees around its viewing axis
-before comparison; alpha was preserved and the gun geometry was not stretched
-or otherwise deformed.
+The comparison uses complete connected subjects in muzzle, true-side, and top
+order. It no longer crops the side barrel at the original equal-width panel
+divider. The compiler top camera is rolled 90 degrees around its viewing axis;
+geometry is not stretched or otherwise deformed.
 
 | View | Silhouette IoU | Edge F1 | Area ratio |
 | --- | ---: | ---: | ---: |
-| Muzzle front orthographic | 0.771 | 0.323 | 1.163 |
-| True side orthographic | 0.524 | 0.142 | 0.702 |
-| Top orthographic | 0.733 | 0.362 | 0.857 |
+| Muzzle front orthographic | 0.771 | 0.367 | 1.203 |
+| True side orthographic | 0.850 | 0.525 | 1.094 |
+| Top orthographic | 0.772 | 0.460 | 0.894 |
 
-The muzzle and top silhouettes agree after camera roll correction. The AI side
-panel is vertically inflated relative to both its own top/muzzle panels and a
-mechanically consistent coarse AK-47: its stock, receiver, pistol grip, and
-magazine are all simultaneously thicker. The second authored pass still moved
-toward that panel by shortening the stock and extending the curved magazine
-from a 13-cell to a 19-cell drop. It does not copy the remaining contradictory
-vertical inflation into every physical depth tier.
+The corrected true-side IoU is 0.850, compared with 0.524 from the invalid
+fixed-third crop. The remaining side residuals are small voxel quantization and
+depth-projection differences, not missing major parts. In particular, the
+pistol grip now drops thirteen cells and the front assembly preserves the gas
+tube, barrel, cleaning-rod gaps, compact muzzle, and front-sight tower.
 
-Mechanical geometry remains authoritative where the AI sheet is ambiguous:
-the barrel and muzzle are hollow X-axis rings, the gas tube is an X-axis
-cross-section, the trigger guard stays open, and the side colors do not fake a
-bore or end face.
+Mechanical geometry remains independently verified: both barrel regions use
+open X-axis 3x3 rings, the gas tube is an X-axis cross-section, the trigger
+guard stays open, and the muzzle close-up proves a real hole rather than a dark
+face color.

@@ -13,68 +13,68 @@
   "materials": {
     "W": {
       "label": "walnut dark edge",
-      "color": "#713219",
+      "color": "#472013",
       "depth": 3.2
     },
     "w": {
       "label": "walnut body",
-      "color": "#9B4824",
+      "color": "#73351F",
       "depth": 3.2
     },
     "H": {
       "label": "walnut highlight",
-      "color": "#C56831",
+      "color": "#894226",
       "depth": 3.25
     },
     "P": {
       "label": "walnut pistol grip",
-      "color": "#84391E",
+      "color": "#5A2818",
       "depth": 2.6
     },
     "M": {
       "label": "blued steel edge",
-      "color": "#202328",
+      "color": "#272222",
       "depth": 3.0
     },
     "m": {
       "label": "blued steel face",
-      "color": "#34383E",
+      "color": "#413A3B",
       "depth": 3.0
     },
     "S": {
       "label": "polished steel highlight",
-      "color": "#898F95",
+      "color": "#847F7F",
       "depth": 3.05
     },
     "D": {
       "label": "receiver rivet",
-      "color": "#60666C",
+      "color": "#787173",
       "depth": 3.5
     },
     "G": {
       "label": "magazine edge",
-      "color": "#202329",
+      "color": "#272222",
       "depth": 2.4
     },
     "g": {
       "label": "magazine rib",
-      "color": "#383C42",
+      "color": "#332E2E",
       "depth": 2.45
     },
     "T": {
       "label": "thin steel",
-      "color": "#292D31",
+      "color": "#342E2E",
       "depth": 1.2
     },
     "B": {
       "label": "barrel and tube steel",
-      "color": "#24282D",
+      "color": "#332E2E",
       "depth": 2.0
     },
-    "K": {
-      "label": "dark bore backing",
-      "color": "#090B0D",
-      "depth": 0.66
+    "R": {
+      "label": "muzzle rim",
+      "color": "#565051",
+      "depth": 1.2
     }
   },
   "volumes": [
@@ -83,9 +83,9 @@
       "chars": "B",
       "base_char": "B",
       "axis": "x",
-      "x_from": 44,
-      "x_to": 62,
-      "y_center": 25,
+      "x_from": 53,
+      "x_to": 59,
+      "y_center": 26,
       "z_center": 0,
       "cross_section": [
         [-1, 0],
@@ -100,9 +100,9 @@
     {
       "name": "barrel_bore",
       "char": "B",
-      "x_from": 56,
-      "x_to": 67,
-      "y_center": 21,
+      "x_from": 53,
+      "x_to": 66,
+      "y_center": 22,
       "z_center": 0,
       "cross_section": [
         [-1, -1], [-1, 0], [-1, 1],
@@ -113,17 +113,15 @@
     },
     {
       "name": "muzzle_bore",
-      "char": "B",
-      "x_from": 68,
-      "x_to": 71,
-      "y_center": 21,
+      "char": "R",
+      "x_from": 67,
+      "x_to": 68,
+      "y_center": 22,
       "z_center": 0,
       "cross_section": [
-        [-2, -1], [-2, 0], [-2, 1],
-        [-1, -2], [-1, -1], [-1, 0], [-1, 1], [-1, 2],
-        [0, -2], [0, -1], [0, 0], [0, 1], [0, 2],
-        [1, -2], [1, -1], [1, 0], [1, 1], [1, 2],
-        [2, -1], [2, 0], [2, 1]
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 0], [0, 1],
+        [1, -1], [1, 0], [1, 1]
       ],
       "hole": [[0, 0]]
     }
@@ -175,19 +173,19 @@
     "paths": [
       {
         "name": "stock to receiver spine",
-        "x_from": 6,
+        "x_from": 3,
         "x_to": 43,
-        "y_from": 17,
-        "y_to": 25,
+        "y_from": 13,
+        "y_to": 29,
         "chars": "WwHPMmSD"
       },
       {
         "name": "gas and barrel spine",
-        "x_from": 44,
-        "x_to": 71,
+        "x_from": 42,
+        "x_to": 68,
         "y_from": 19,
-        "y_to": 27,
-        "chars": "WwHMBTK"
+        "y_to": 29,
+        "chars": "WwHMBTR"
       }
     ],
     "contacts": [
@@ -213,7 +211,7 @@
       },
       {
         "name": "barrel meets handguard",
-        "a": "BK",
+        "a": "BR",
         "b": "WwH"
       }
     ]

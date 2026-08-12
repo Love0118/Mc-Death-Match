@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 class ResourcePackAssetsTest {
     private static final Path PACK_ROOT = Path.of("resource-pack");
     private static final Path VARIANT_ROOT = Path.of("resource-pack-variants");
+    private static final Path AK47_VOXEL_ROOT = Path.of("voxel-models", "ak47");
     private static final Map<Integer, String> KILL_SOUND_SHA256 = Map.of(
         1, "50de4010f88be0a3011d60af67f29cec9acb6cd43a258fcd5150dc3cb135fca8",
         2, "a40e268608cfdb06c94235771a86ff19b0a1eaf344cfca6fb181e499da649bc0",
@@ -101,9 +103,45 @@ class ResourcePackAssetsTest {
         assertTrue(Files.size(model) > 500_000L);
         assertTrue(Files.size(texture) > 100L);
         String modelJson = Files.readString(model);
-        assertTrue(modelJson.contains("\"name\": \"barrel_bore_"));
-        assertTrue(modelJson.contains("\"name\": \"muzzle_bore_"));
+        assertEquals(112, occurrences(modelJson, "\"name\": \"barrel_bore_"));
+        assertEquals(16, occurrences(modelJson, "\"name\": \"muzzle_bore_"));
         assertTrue(modelJson.contains("\"name\": \"gas_tube_"));
+    }
+
+    @Test
+    void ak47BlueprintKeepsReferenceGripLengthAndCompactMuzzle() throws IOException {
+        List<String> source = Files.readAllLines(AK47_VOXEL_ROOT.resolve("blueprint.txt"));
+        int sideMarker = source.indexOf("[side]");
+        assertTrue(sideMarker >= 0);
+        List<String> rows = source.subList(sideMarker + 1, source.size()).stream()
+            .filter(line -> !line.isBlank() && !line.startsWith("#"))
+            .toList();
+        assertEquals(32, rows.size());
+        assertTrue(rows.stream().allMatch(row -> row.length() == 72));
+
+        int gripMinY = Integer.MAX_VALUE;
+        int gripMaxY = Integer.MIN_VALUE;
+        for (int sourceY = 0; sourceY < rows.size(); sourceY++) {
+            int gridY = rows.size() - 1 - sourceY;
+            for (int x = 19; x <= 26; x++) {
+                char material = rows.get(sourceY).charAt(x);
+                if (gridY <= 21 && (material == 'P' || material == 'H')) {
+                    gripMinY = Math.min(gripMinY, gridY);
+                    gripMaxY = Math.max(gripMaxY, gridY);
+                }
+            }
+        }
+        assertEquals(9, gripMinY);
+        assertEquals(21, gripMaxY);
+        assertEquals(13, gripMaxY - gripMinY + 1);
+
+        String config = Files.readString(AK47_VOXEL_ROOT.resolve("config.json"));
+        assertTrue(config.contains("\"name\": \"barrel_bore\""));
+        assertTrue(config.contains("\"x_from\": 53"));
+        assertTrue(config.contains("\"x_to\": 66"));
+        assertTrue(config.contains("\"name\": \"muzzle_bore\""));
+        assertTrue(config.contains("\"x_from\": 67"));
+        assertTrue(config.contains("\"x_to\": 68"));
     }
 
     @Test

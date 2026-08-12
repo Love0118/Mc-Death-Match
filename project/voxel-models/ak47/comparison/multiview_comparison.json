@@ -11,27 +11,27 @@
   "views": [
     {
       "view": "MUZZLE FRONT ORTHO",
-      "silhouette_iou": 0.7706563706563706,
-      "edge_f1": 0.32270552538213504,
-      "area_ratio": 1.1629160490499932
+      "silhouette_iou": 0.7711561382598331,
+      "edge_f1": 0.3667385214907021,
+      "area_ratio": 1.2026681040291065
     },
     {
       "view": "TRUE SIDE ORTHO",
-      "silhouette_iou": 0.5243084764213964,
-      "edge_f1": 0.14153328554403036,
-      "area_ratio": 0.7018023617153512
+      "silhouette_iou": 0.849510752969494,
+      "edge_f1": 0.5254878223472557,
+      "area_ratio": 1.0944536620052145
     },
     {
       "view": "TOP ORTHO",
-      "silhouette_iou": 0.7328444564047363,
-      "edge_f1": 0.36203860783727354,
-      "area_ratio": 0.8568956816379497
+      "silhouette_iou": 0.7715423886138614,
+      "edge_f1": 0.46005287864622757,
+      "area_ratio": 0.894412506720708
     }
   ],
   "mean": {
-    "silhouette_iou": 0.6759364344941678,
-    "edge_f1": 0.27542580625447965,
-    "area_ratio": 0.9072046974677647
+    "silhouette_iou": 0.7974030932810628,
+    "edge_f1": 0.45075974082806175,
+    "area_ratio": 1.0638447575850096
   },
   "overlay": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\comparison\\multiview_overlay.png"
 }

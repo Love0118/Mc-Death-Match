@@ -1,54 +1,58 @@
 # AK-47 voxel design contract
 
-The generated three-panel sheet is a visual target. The hand-authored ASCII
-blueprint remains the source of truth, with the true-side panel and the open
-muzzle taking precedence over AI drift in the alternate views.
+The generated multiview sheet is the visual target. The hand-authored ASCII
+blueprint remains the source of truth, with the restored full true-side subject
+and the open muzzle geometry taking precedence.
 
 ## Semantic parts
 
 | Part | Grid extent | Structural contact or negative space |
 | --- | --- | --- |
-| Walnut fixed stock | x=6..22, y=17..24 | Four-neighbor contact with the rear receiver |
-| Stamped receiver and dust cover | x=20..43, y=19..25 | Stable proportion anchor for all attached parts |
-| Walnut pistol grip | x=20..26, y=11..18 | Touches the receiver; does not fill the trigger opening |
-| Trigger and guard | x=27..33, y=15..18 | Hollow center remains visible |
-| Curved magazine | x=34..54, y=0..18 | Locks into the receiver and sweeps forward at the lower tip |
-| Walnut handguard | x=43..56, y=20..23 | Touches both receiver and exposed barrel |
-| Gas tube | x=44..62, center y=25 | Explicit X-axis five-cell cross-section |
-| Barrel | x=56..67, center y=21 | Explicit X-axis 3x3 ring with a through-bore |
-| Muzzle device | x=68..71, center y=21 | Explicit faceted 5x5 ring with the same open bore |
-| Front sight | x=61..66, y=23..27 | Bridges the barrel and gas system |
-| Cleaning rod | x=54..67, y=19 | Thin steel depth tier beneath the barrel |
+| Walnut fixed stock | x=3..19, y=13..25 | Four-neighbor contact with the rear receiver |
+| Stamped receiver and dust cover | x=19..43, y=21..29 | Stable proportion anchor for all attached parts |
+| Walnut pistol grip | x=19..26, y=9..21 | Thirteen-cell drop; touches receiver without filling trigger opening |
+| Trigger and guard | x=27..31, y=18..20 | Hollow center remains visible |
+| Curved magazine | x=30..44, y=2..21 | Locks into receiver and follows the restored side silhouette |
+| Walnut handguard | x=42..52, y=21..28 | Touches receiver and front metalwork |
+| Gas tube | x=53..59, center y=26 | Explicit X-axis five-cell cross-section |
+| Barrel | x=53..66, center y=22 | Explicit X-axis 3x3 ring with a through-bore |
+| Muzzle device | x=67..68, center y=22 | Compact 3x3 ring continuing the real bore |
+| Front sight | x=64..66, y=24..29 | Matches the restored reference tower |
+| Cleaning rod | x=54..67, y=19 | Thin steel tier below the barrel, fixed by two bands |
 
-The main receiver spans 24 cells. The complete rifle spans 66 of 72 columns,
-while the curved magazine drops 19 cells below its receiver contact. Wood,
-body metal, thin steel, and raised rivets use separate depth roles.
+The complete rifle spans 66 of 72 columns. The restored semantic side subject
+is mapped to 66x28 cells inside the 72x32 authored grid. Wood, body metal, thin
+steel, and raised rivets use separate depth roles.
 
-## Generated reference prompt
+## Reference restoration and trace
 
-Built-in image generation was used with a flat `#00FF00` background. The final
-prompt required exactly three equal panels in this order: true left-side,
-muzzle/front orthographic, and top orthographic. It preserved a classic AK-47
-with blued steel, reddish walnut furniture, a strongly curved magazine, gas
-tube, sights, trigger-guard opening, and an open muzzle; it prohibited scopes,
-rails, slings, bayonets, suppressors, hands, text, shadows, micro-voxels, smooth
-shading, and details smaller than a cell on the declared 72x28 side grid.
+The generated objects crossed the original equal-width panel dividers: the
+side AK-47 barrel extended into the neighboring panel. The previous fixed-third
+crop therefore cut the reference at the gas block. `rebuild_review_inputs.py`
+now extracts the three connected alpha subjects first and places them on equal
+semantic canvases in muzzle, side, top order.
 
-`reference_multiview_chroma.png` is the generated source and
-`reference_multiview_alpha.png` is its locally validated chroma-key removal.
-The generated concept declared a 72x28 grid; visual review then expanded the
-authored source to 72x32 so the curved magazine could keep coarse one-cell
-steps without compressing its silhouette. `reference_multiview_axis_order.png`
-reorders the panels to muzzle, side, top. The renderer's top camera needed a
-90-degree roll-only semantic correction in
-`preview/ak47_comparison_turntable_semantic.png`; geometry was not stretched.
+`reference_multiview_alpha.png` remains the generated source.
+`reference_multiview_axis_order.png` is the restored semantic comparison sheet.
+`reference_multiview_axis_order_chroma.png` is its traceable chroma copy. The
+retained `trace/color_trace_report.json` and `trace/color_cell_comparison.png`
+record the 72x32 side extraction and reference palette. The authored blueprint
+uses semantic material names while its colors come from those measured palette
+clusters.
 
-Recompile after editing the source:
+The renderer's top camera requires a 90-degree roll-only correction, applied by
+the same review-input script. Geometry is never stretched or warped.
+
+## Rebuild and validate
 
 ```powershell
 $skill = "$env:USERPROFILE\.codex\skills\minecraft-reference-to-voxel"
-python "$skill\scripts\compile_voxel_item.py" `
-  --project .\voxel-models\ak47
-python "$skill\scripts\validate_axis_geometry.py" `
-  --project .\voxel-models\ak47
+python "$skill\scripts\compile_voxel_item.py" --project .\voxel-models\ak47
+python "$skill\scripts\validate_axis_geometry.py" --project .\voxel-models\ak47
+python .\voxel-models\ak47\rebuild_review_inputs.py
+python "$skill\scripts\compare_multiview.py" `
+  --reference .\voxel-models\ak47\reference_multiview_axis_order.png `
+  --render .\voxel-models\ak47\preview\ak47_comparison_turntable_semantic.png `
+  --out .\voxel-models\ak47\comparison --panels 3 `
+  --labels "MUZZLE FRONT ORTHO,TRUE SIDE ORTHO,TOP ORTHO"
 ```

@@ -1,0 +1,50 @@
+{
+  "0": {
+    "label": "reference cluster 0",
+    "color": "#272222"
+  },
+  "1": {
+    "label": "reference cluster 1",
+    "color": "#391E15"
+  },
+  "2": {
+    "label": "reference cluster 2",
+    "color": "#472013"
+  },
+  "3": {
+    "label": "reference cluster 3",
+    "color": "#332E2E"
+  },
+  "4": {
+    "label": "reference cluster 4",
+    "color": "#5A2818"
+  },
+  "5": {
+    "label": "reference cluster 5",
+    "color": "#593122"
+  },
+  "6": {
+    "label": "reference cluster 6",
+    "color": "#413A3B"
+  },
+  "7": {
+    "label": "reference cluster 7",
+    "color": "#73351F"
+  },
+  "8": {
+    "label": "reference cluster 8",
+    "color": "#565051"
+  },
+  "9": {
+    "label": "reference cluster 9",
+    "color": "#894226"
+  },
+  "a": {
+    "label": "reference cluster 10",
+    "color": "#787173"
+  },
+  "b": {
+    "label": "reference cluster 11",
+    "color": "#847F7F"
+  }
+}

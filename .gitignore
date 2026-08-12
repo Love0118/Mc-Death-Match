@@ -50,3 +50,7 @@ server/*.lck
 *.iml
 .DS_Store
 Thumbs.db
+
+# Python review-script cache
+__pycache__/
+*.py[cod]
