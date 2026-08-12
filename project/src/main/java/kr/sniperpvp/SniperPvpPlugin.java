@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public final class SniperPvpPlugin extends JavaPlugin {
     private volatile PluginSettings settings;
     private NamespacedKey rifleKey;
+    private NamespacedKey rifleModelKey;
+    private NamespacedKey rifleDisplayNameKey;
     private NamespacedKey scopeHelmetKey;
     private NamespacedKey arenaVersionKey;
     private ArenaService arenaService;
@@ -23,6 +25,8 @@ public final class SniperPvpPlugin extends JavaPlugin {
         saveDefaultConfig();
         settings = PluginSettings.load(getConfig());
         rifleKey = new NamespacedKey(this, "sniper_rifle");
+        rifleModelKey = new NamespacedKey(this, "rifle_model");
+        rifleDisplayNameKey = new NamespacedKey(this, "rifle_display_name");
         scopeHelmetKey = new NamespacedKey(this, "scope_overlay_helmet");
         arenaVersionKey = new NamespacedKey(this, "arena_build_version");
 
@@ -48,10 +52,18 @@ public final class SniperPvpPlugin extends JavaPlugin {
             gameManager,
             gunService
         );
+        DebugRifleMenu debugRifleMenu = new DebugRifleMenu(this, gunService);
         getServer().getPluginManager().registerEvents(arenaService, this);
         getServer().getPluginManager().registerEvents(listener, this);
+        getServer().getPluginManager().registerEvents(debugRifleMenu, this);
 
-        SniperCommand command = new SniperCommand(this, arenaService, gameManager, gunService);
+        SniperCommand command = new SniperCommand(
+            this,
+            arenaService,
+            gameManager,
+            gunService,
+            debugRifleMenu
+        );
         Objects.requireNonNull(getCommand("sniper"), "sniper command missing from plugin.yml")
             .setExecutor(command);
         Objects.requireNonNull(getCommand("sniper")).setTabCompleter(command);
@@ -93,6 +105,14 @@ public final class SniperPvpPlugin extends JavaPlugin {
 
     public NamespacedKey rifleKey() {
         return rifleKey;
+    }
+
+    public NamespacedKey rifleModelKey() {
+        return rifleModelKey;
+    }
+
+    public NamespacedKey rifleDisplayNameKey() {
+        return rifleDisplayNameKey;
     }
 
     public NamespacedKey scopeHelmetKey() {

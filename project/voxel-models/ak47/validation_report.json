@@ -1,0 +1,97 @@
+{
+  "namespace": "jm",
+  "model_id": "ak47",
+  "grid": [
+    72,
+    32
+  ],
+  "cell_model_units": 0.666666,
+  "solid_voxels": 827,
+  "one_blueprint_dot_per_element": false,
+  "source_dots": 669,
+  "compiled_elements": 827,
+  "volumetric_regions": [
+    "gas_tube"
+  ],
+  "volume_validation": [
+    {
+      "name": "gas_tube",
+      "axis": "x",
+      "z_width": null,
+      "chamber_cells": 0,
+      "chamber_depth_layers": 1
+    }
+  ],
+  "model_bounds": {
+    "from": [
+      -12.0,
+      -2.0,
+      6.25
+    ],
+    "to": [
+      32.0,
+      16.6666,
+      9.75
+    ]
+  },
+  "source_validation": {
+    "connected_components": 1,
+    "paths": [
+      {
+        "name": "stock to receiver spine",
+        "passed": true,
+        "range": [
+          6,
+          43
+        ]
+      },
+      {
+        "name": "gas and barrel spine",
+        "passed": true,
+        "range": [
+          44,
+          71
+        ]
+      }
+    ],
+    "contacts": [
+      {
+        "name": "stock meets receiver",
+        "passed": true
+      },
+      {
+        "name": "handguard meets receiver",
+        "passed": true
+      },
+      {
+        "name": "pistol grip meets receiver",
+        "passed": true
+      },
+      {
+        "name": "magazine locks into receiver",
+        "passed": true
+      },
+      {
+        "name": "barrel meets handguard",
+        "passed": true
+      }
+    ]
+  },
+  "generated_validation": {
+    "elements": 827,
+    "invalid_uv_faces": 0
+  },
+  "outputs": {
+    "model": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\generated\\assets\\jm\\models\\item\\ak47.json",
+    "item": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\generated\\assets\\jm\\items\\ak47.json",
+    "texture": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\generated\\assets\\jm\\textures\\item\\ak47_palette.png",
+    "blueprint_preview": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_blueprint.png",
+    "hero_preview": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_hero.png",
+    "turntable_preview": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_turntable.png",
+    "comparison_turntable": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_comparison_turntable.png",
+    "volume_detail_gas_tube": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_gas_tube_detail.png",
+    "volume_lateral_gas_tube": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_gas_tube_lateral_detail.png",
+    "bore_detail_barrel_bore": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_barrel_bore_detail.png",
+    "bore_detail_muzzle_bore": "C:\\Users\\User\\Documents\\ChatGPT\\sniper pvp\\project\\voxel-models\\ak47\\preview\\ak47_muzzle_bore_detail.png"
+  }
+}

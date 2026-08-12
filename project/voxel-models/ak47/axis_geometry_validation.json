@@ -1,0 +1,36 @@
+{
+  "coordinate_contract": {
+    "x": "length, barrel, bore, chambers",
+    "y": "height",
+    "z": "thickness"
+  },
+  "volumes": [
+    {
+      "name": "gas_tube",
+      "axis": "x",
+      "passed": true,
+      "checks": []
+    }
+  ],
+  "bores": [
+    {
+      "name": "barrel_bore",
+      "axis": "x",
+      "length": 12,
+      "ring_cells": 8,
+      "hole_cells": 1,
+      "generated_voxels": 96,
+      "passed": true
+    },
+    {
+      "name": "muzzle_bore",
+      "axis": "x",
+      "length": 4,
+      "ring_cells": 20,
+      "hole_cells": 1,
+      "generated_voxels": 80,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

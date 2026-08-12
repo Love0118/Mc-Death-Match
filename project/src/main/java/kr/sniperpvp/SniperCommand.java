@@ -18,19 +18,27 @@ import org.jetbrains.annotations.NotNull;
 
 final class SniperCommand implements CommandExecutor, TabCompleter {
     private static final List<String> SUBCOMMANDS = List.of(
-        "start", "stop", "give", "spawn", "status", "reload"
+        "start", "stop", "give", "debug", "spawn", "status", "reload"
     );
 
     private final SniperPvpPlugin plugin;
     private final ArenaService arena;
     private final GameManager game;
     private final GunService gun;
+    private final DebugRifleMenu debugRifleMenu;
 
-    SniperCommand(SniperPvpPlugin plugin, ArenaService arena, GameManager game, GunService gun) {
+    SniperCommand(
+        SniperPvpPlugin plugin,
+        ArenaService arena,
+        GameManager game,
+        GunService gun,
+        DebugRifleMenu debugRifleMenu
+    ) {
         this.plugin = plugin;
         this.arena = arena;
         this.game = game;
         this.gun = gun;
+        this.debugRifleMenu = debugRifleMenu;
     }
 
     @Override
@@ -49,6 +57,7 @@ final class SniperCommand implements CommandExecutor, TabCompleter {
             case "start" -> start(sender);
             case "stop" -> stop(sender);
             case "give" -> give(sender, args);
+            case "debug" -> debug(sender);
             case "spawn" -> spawn(sender);
             case "status" -> status(sender);
             case "reload" -> reload(sender);
@@ -87,6 +96,15 @@ final class SniperCommand implements CommandExecutor, TabCompleter {
         target.getInventory().setItem(0, gun.createRifle());
         target.getInventory().setHeldItemSlot(0);
         sender.sendMessage(Component.text(target.getName() + "에게 저격총을 지급했습니다.", NamedTextColor.GREEN));
+        return true;
+    }
+
+    private boolean debug(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("총기 모델 GUI는 플레이어만 사용할 수 있습니다.", NamedTextColor.RED));
+            return true;
+        }
+        debugRifleMenu.open(player);
         return true;
     }
 
@@ -141,7 +159,10 @@ final class SniperCommand implements CommandExecutor, TabCompleter {
 
     private void showHelp(CommandSender sender, String label) {
         sender.sendMessage(Component.text("/" + label + " start|stop|status", NamedTextColor.AQUA));
-        sender.sendMessage(Component.text("/" + label + " give [player] | spawn | reload", NamedTextColor.GRAY));
+        sender.sendMessage(Component.text(
+            "/" + label + " give [player] | debug | spawn | reload",
+            NamedTextColor.GRAY
+        ));
     }
 
     @Override

@@ -64,6 +64,19 @@ rifle:
     enabled: true
     spacing: 0.75
 
+debug:
+  # /sni debug reads this catalog into a paginated model-selection GUI.
+  # Add an item-model resource and one entry here to expose another selectable gun.
+  rifle-models:
+    - id: ak47
+      display-name: AK-47
+      item-model: jm:ak47
+      custom-model-data: 1001
+    - id: walnut_longline_mk2
+      display-name: Walnut Longline Mk2
+      item-model: jm:walnut_longline_mk2
+      custom-model-data: 1001
+
 sounds:
   zoom-in: minecraft:item.spyglass.use
   zoom-out: minecraft:item.spyglass.stop_using

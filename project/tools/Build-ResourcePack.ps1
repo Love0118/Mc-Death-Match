@@ -6,6 +6,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
@@ -23,6 +24,8 @@ if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
 }
 $OutputDirectory = [System.IO.Path]::GetFullPath($OutputDirectory)
 
+& (Join-Path $projectRoot 'tools\Sync-VoxelModels.ps1')
+
 if (-not (Test-Path -LiteralPath (Join-Path $commonRoot 'assets') -PathType Container)) {
     throw 'resource-pack/assets is missing'
 }
@@ -36,7 +39,11 @@ if (-not [string]::IsNullOrWhiteSpace($BasePack)) {
     }
 }
 
-$variants = @(Get-Content -Raw -LiteralPath $matrixPath | ConvertFrom-Json)
+$variantDocument = Get-Content -Raw -LiteralPath $matrixPath | ConvertFrom-Json
+$variants = @()
+foreach ($variant in $variantDocument) {
+    $variants += $variant
+}
 if ($variants.Count -eq 0) {
     throw 'Resource-pack matrix must contain at least one variant'
 }
@@ -106,6 +113,32 @@ function Merge-SoundDefinitions {
         $BaseSounds | Add-Member -NotePropertyName $entry.Name -NotePropertyValue $entry.Value -Force
     }
     Write-Utf8File -Path $soundsPath -Text ($BaseSounds | ConvertTo-Json -Depth 20)
+}
+
+function New-PackArchive {
+    param([string]$SourceDirectory, [string]$ArchivePath)
+    $sourceRoot = [System.IO.Path]::GetFullPath($SourceDirectory).TrimEnd('\', '/')
+    $archive = [System.IO.Compression.ZipFile]::Open(
+        $ArchivePath,
+        [System.IO.Compression.ZipArchiveMode]::Create
+    )
+    try {
+        foreach ($file in Get-ChildItem -LiteralPath $sourceRoot -File -Recurse | Sort-Object FullName) {
+            $relativePath = $file.FullName.Substring($sourceRoot.Length)
+            while ($relativePath.StartsWith('\') -or $relativePath.StartsWith('/')) {
+                $relativePath = $relativePath.Substring(1)
+            }
+            $entryName = $relativePath.Replace('\', '/')
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                $archive,
+                $file.FullName,
+                $entryName,
+                [System.IO.Compression.CompressionLevel]::Optimal
+            ) | Out-Null
+        }
+    } finally {
+        $archive.Dispose()
+    }
 }
 
 function Test-PackArchive {
@@ -208,12 +241,7 @@ try {
         if (Test-Path -LiteralPath $output) {
             Remove-Item -LiteralPath $output -Force
         }
-        [System.IO.Compression.ZipFile]::CreateFromDirectory(
-            $workingDirectory,
-            $output,
-            [System.IO.Compression.CompressionLevel]::Optimal,
-            $false
-        )
+        New-PackArchive -SourceDirectory $workingDirectory -ArchivePath $output
         Test-PackArchive -Variant $variant -ArchivePath $output
         $runtimePack = Join-Path $runtimeDirectory ([string]$variant.file)
         Copy-Item -LiteralPath $output -Destination $runtimePack -Force

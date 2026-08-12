@@ -2,6 +2,10 @@
 
 - Rifle model and palette: user-supplied
   `walnut-longline-mk2-low-compact-scope-20260811-222044.zip`.
+- AK-47 model and palette: hand-authored 72x32 ASCII blueprint under
+  `voxel-models/ak47`, compiled with the `minecraft-reference-to-voxel` workflow.
+  Its generated multiview sheet is a visual reference; the ASCII blueprint is
+  the model source of truth.
 - Kill streak audio: user-supplied `valorant-1-kill.mp3` through `valorant-5-kills.mp3`.
   Each source was converted without gain reduction, downmixed to mono, resampled to 48 kHz and encoded
   as OGG Vorbis for Minecraft playback.

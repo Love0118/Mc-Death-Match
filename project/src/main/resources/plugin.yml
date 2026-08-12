@@ -9,7 +9,7 @@ commands:
   sniper:
     aliases: [sni, snp]
     description: Sniper PvP administration command.
-    usage: /sniper <start|stop|give|spawn|status|reload>
+    usage: /sniper <start|stop|give|debug|spawn|status|reload>
     permission: sniperpvp.admin
 permissions:
   sniperpvp.admin:

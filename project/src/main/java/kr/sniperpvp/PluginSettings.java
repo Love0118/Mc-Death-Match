@@ -1,5 +1,11 @@
 package kr.sniperpvp;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public record PluginSettings(
@@ -7,6 +13,7 @@ public record PluginSettings(
     GameSettings game,
     HudSettings hud,
     RifleSettings rifle,
+    List<RifleModelSettings> debugRifleModels,
     SoundSettings sounds,
     MatchResultSoundSettings matchResultSounds,
     KillStreakSettings killStreak
@@ -86,6 +93,7 @@ public record PluginSettings(
                 "rifle.damage.leg-height-ratio must be lower than rifle.damage.head-height-ratio"
             );
         }
+        List<RifleModelSettings> debugRifleModels = rifleModels(config);
         SoundSettings sounds = new SoundSettings(
             resourceLocation(config, "sounds.zoom-in", "minecraft:item.spyglass.use"),
             resourceLocation(config, "sounds.zoom-out", "minecraft:item.spyglass.stop_using"),
@@ -115,7 +123,76 @@ public record PluginSettings(
             nonNegative(config.getDouble("kill-streak.volume", 1.0), "kill-streak.volume"),
             positive(config.getDouble("kill-streak.pitch", 1.0), "kill-streak.pitch")
         );
-        return new PluginSettings(arena, game, hud, rifle, sounds, matchResultSounds, killStreak);
+        return new PluginSettings(
+            arena,
+            game,
+            hud,
+            rifle,
+            debugRifleModels,
+            sounds,
+            matchResultSounds,
+            killStreak
+        );
+    }
+
+    private static List<RifleModelSettings> rifleModels(FileConfiguration config) {
+        List<Map<?, ?>> configured = config.getMapList("debug.rifle-models");
+        if (configured.isEmpty()) {
+            return List.of(
+                new RifleModelSettings("ak47", "AK-47", "jm:ak47", 1001),
+                new RifleModelSettings(
+                    "walnut_longline_mk2",
+                    "Walnut Longline Mk2",
+                    "jm:walnut_longline_mk2",
+                    1001
+                )
+            );
+        }
+
+        List<RifleModelSettings> models = new ArrayList<>();
+        Set<String> ids = new HashSet<>();
+        for (int index = 0; index < configured.size(); index++) {
+            Map<?, ?> entry = configured.get(index);
+            String path = "debug.rifle-models[" + index + "]";
+            String id = mapText(entry, "id", path).toLowerCase(Locale.ROOT);
+            if (!id.matches("[a-z0-9_.-]+")) {
+                throw new IllegalArgumentException(path + ".id must use lowercase resource-location characters");
+            }
+            if (!ids.add(id)) {
+                throw new IllegalArgumentException(path + ".id duplicates " + id);
+            }
+            String displayName = mapText(entry, "display-name", path);
+            String itemModel = mapText(entry, "item-model", path);
+            if (!itemModel.matches("[a-z0-9._-]+:[a-z0-9/._-]+")) {
+                throw new IllegalArgumentException(path + ".item-model must be a namespaced resource location");
+            }
+            Object customModelData = entry.get("custom-model-data");
+            if (!(customModelData instanceof Number number)) {
+                throw new IllegalArgumentException(path + ".custom-model-data must be a positive integer");
+            }
+            double rawCustomModelData = number.doubleValue();
+            if (!Double.isFinite(rawCustomModelData)
+                || rawCustomModelData < 1.0
+                || rawCustomModelData > Integer.MAX_VALUE
+                || rawCustomModelData != Math.rint(rawCustomModelData)) {
+                throw new IllegalArgumentException(path + ".custom-model-data must be a positive integer");
+            }
+            models.add(new RifleModelSettings(
+                id,
+                displayName,
+                itemModel,
+                positiveInt(number.intValue(), path + ".custom-model-data")
+            ));
+        }
+        return List.copyOf(models);
+    }
+
+    private static String mapText(Map<?, ?> entry, String key, String path) {
+        Object raw = entry.get(key);
+        if (!(raw instanceof String value) || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(path + "." + key + " must not be blank");
+        }
+        return value.trim();
     }
 
     private static String text(FileConfiguration config, String path, String fallback) {
@@ -241,6 +318,14 @@ public record PluginSettings(
         double headHeightRatio,
         boolean tracerEnabled,
         double tracerSpacing
+    ) {
+    }
+
+    public record RifleModelSettings(
+        String id,
+        String displayName,
+        String itemModel,
+        int customModelData
     ) {
     }
 

@@ -1,0 +1,221 @@
+{
+  "namespace": "jm",
+  "model_id": "ak47",
+  "title": "AK-47",
+  "grid": {
+    "width": 72,
+    "height": 32,
+    "cell": 0.666666,
+    "origin_x": -16.0,
+    "origin_y": -2.0,
+    "center_z": 8.0
+  },
+  "materials": {
+    "W": {
+      "label": "walnut dark edge",
+      "color": "#713219",
+      "depth": 3.2
+    },
+    "w": {
+      "label": "walnut body",
+      "color": "#9B4824",
+      "depth": 3.2
+    },
+    "H": {
+      "label": "walnut highlight",
+      "color": "#C56831",
+      "depth": 3.25
+    },
+    "P": {
+      "label": "walnut pistol grip",
+      "color": "#84391E",
+      "depth": 2.6
+    },
+    "M": {
+      "label": "blued steel edge",
+      "color": "#202328",
+      "depth": 3.0
+    },
+    "m": {
+      "label": "blued steel face",
+      "color": "#34383E",
+      "depth": 3.0
+    },
+    "S": {
+      "label": "polished steel highlight",
+      "color": "#898F95",
+      "depth": 3.05
+    },
+    "D": {
+      "label": "receiver rivet",
+      "color": "#60666C",
+      "depth": 3.5
+    },
+    "G": {
+      "label": "magazine edge",
+      "color": "#202329",
+      "depth": 2.4
+    },
+    "g": {
+      "label": "magazine rib",
+      "color": "#383C42",
+      "depth": 2.45
+    },
+    "T": {
+      "label": "thin steel",
+      "color": "#292D31",
+      "depth": 1.2
+    },
+    "B": {
+      "label": "barrel and tube steel",
+      "color": "#24282D",
+      "depth": 2.0
+    },
+    "K": {
+      "label": "dark bore backing",
+      "color": "#090B0D",
+      "depth": 0.66
+    }
+  },
+  "volumes": [
+    {
+      "name": "gas_tube",
+      "chars": "B",
+      "base_char": "B",
+      "axis": "x",
+      "x_from": 44,
+      "x_to": 62,
+      "y_center": 25,
+      "z_center": 0,
+      "cross_section": [
+        [-1, 0],
+        [0, -1],
+        [0, 0],
+        [0, 1],
+        [1, 0]
+      ]
+    }
+  ],
+  "bores": [
+    {
+      "name": "barrel_bore",
+      "char": "B",
+      "x_from": 56,
+      "x_to": 67,
+      "y_center": 21,
+      "z_center": 0,
+      "cross_section": [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 0], [0, 1],
+        [1, -1], [1, 0], [1, 1]
+      ],
+      "hole": [[0, 0]]
+    },
+    {
+      "name": "muzzle_bore",
+      "char": "B",
+      "x_from": 68,
+      "x_to": 71,
+      "y_center": 21,
+      "z_center": 0,
+      "cross_section": [
+        [-2, -1], [-2, 0], [-2, 1],
+        [-1, -2], [-1, -1], [-1, 0], [-1, 1], [-1, 2],
+        [0, -2], [0, -1], [0, 0], [0, 1], [0, 2],
+        [1, -2], [1, -1], [1, 0], [1, 1], [1, 2],
+        [2, -1], [2, 0], [2, 1]
+      ],
+      "hole": [[0, 0]]
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [24, 138, 0],
+      "translation": [0, -0.5, 0],
+      "scale": [0.39, 0.39, 0.39]
+    },
+    "ground": {
+      "rotation": [0, 0, 0],
+      "translation": [0, 3, 0],
+      "scale": [0.23, 0.23, 0.23]
+    },
+    "fixed": {
+      "rotation": [0, 90, 0],
+      "translation": [0, 0, 0],
+      "scale": [0.29, 0.29, 0.29]
+    },
+    "thirdperson_righthand": {
+      "rotation": [0, 90, 0],
+      "translation": [0, 3.5, 1],
+      "scale": [0.39, 0.39, 0.39]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, -90, 0],
+      "translation": [0, 3.5, 1],
+      "scale": [0.39, 0.39, 0.39]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, 90, -25],
+      "translation": [1.1, 3.1, 1.2],
+      "scale": [0.46, 0.46, 0.46]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, -90, 25],
+      "translation": [1.1, 3.1, 1.2],
+      "scale": [0.46, 0.46, 0.46]
+    }
+  },
+  "validation": {
+    "single_component": true,
+    "max_elements": 1200,
+    "allowed_bounds": {
+      "min": [-16, -16, -16],
+      "max": [32, 32, 32]
+    },
+    "paths": [
+      {
+        "name": "stock to receiver spine",
+        "x_from": 6,
+        "x_to": 43,
+        "y_from": 17,
+        "y_to": 25,
+        "chars": "WwHPMmSD"
+      },
+      {
+        "name": "gas and barrel spine",
+        "x_from": 44,
+        "x_to": 71,
+        "y_from": 19,
+        "y_to": 27,
+        "chars": "WwHMBTK"
+      }
+    ],
+    "contacts": [
+      {
+        "name": "stock meets receiver",
+        "a": "WwH",
+        "b": "MmSD"
+      },
+      {
+        "name": "handguard meets receiver",
+        "a": "WwH",
+        "b": "MmSD"
+      },
+      {
+        "name": "pistol grip meets receiver",
+        "a": "PH",
+        "b": "MmSD"
+      },
+      {
+        "name": "magazine locks into receiver",
+        "a": "Gg",
+        "b": "MmSD"
+      },
+      {
+        "name": "barrel meets handguard",
+        "a": "BK",
+        "b": "WwH"
+      }
+    ]
+  }
+}

@@ -72,9 +72,19 @@ final class GunService {
 
     ItemStack createRifle() {
         PluginSettings.RifleSettings rifle = settings.get().rifle();
+        return createRifle(new PluginSettings.RifleModelSettings(
+            "gameplay",
+            "저격총",
+            rifle.itemModel(),
+            rifle.customModelData()
+        ));
+    }
+
+    ItemStack createRifle(PluginSettings.RifleModelSettings model) {
+        PluginSettings.RifleSettings rifle = settings.get().rifle();
         ItemStack item = new ItemStack(RIFLE_MATERIAL);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(rifleName(rifle.magazineSize(), rifle.magazineSize()));
+        meta.displayName(rifleName(model.displayName(), rifle.magazineSize(), rifle.magazineSize()));
         meta.lore(List.of(
             Component.text("우클릭: 줌 전환", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
             Component.text("좌클릭: 즉시 발사", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
@@ -83,14 +93,24 @@ final class GunService {
                 .decoration(TextDecoration.ITALIC, false)
         ));
         CustomModelDataComponent modelData = meta.getCustomModelDataComponent();
-        modelData.setFloats(List.of((float) rifle.customModelData()));
+        modelData.setFloats(List.of((float) model.customModelData()));
         meta.setCustomModelDataComponent(modelData);
-        NamespacedKey itemModel = NamespacedKey.fromString(rifle.itemModel());
+        NamespacedKey itemModel = NamespacedKey.fromString(model.itemModel());
         if (itemModel == null) {
-            throw new IllegalStateException("Invalid rifle.item-model: " + rifle.itemModel());
+            throw new IllegalStateException("Invalid rifle item model: " + model.itemModel());
         }
         meta.setItemModel(itemModel);
         meta.getPersistentDataContainer().set(plugin.rifleKey(), PersistentDataType.BYTE, (byte) 1);
+        meta.getPersistentDataContainer().set(
+            plugin.rifleModelKey(),
+            PersistentDataType.STRING,
+            model.id()
+        );
+        meta.getPersistentDataContainer().set(
+            plugin.rifleDisplayNameKey(),
+            PersistentDataType.STRING,
+            model.displayName()
+        );
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);
         return item;
@@ -443,41 +463,52 @@ final class GunService {
     private void showReloadProgress(Player player, GunRuntime runtime) {
         long remainingTicks = Math.max(0L, runtime.reloadEndsAtTick - Bukkit.getCurrentTick());
         double remainingSeconds = remainingTicks / 20.0;
-        updateRifleName(player, reloadingRifleName(remainingSeconds));
+        updateRifleName(player, reloadingRifleSuffix(remainingSeconds), NamedTextColor.AQUA);
     }
 
     private void updateRifleName(Player player, GunRuntime runtime) {
-        updateRifleName(player, rifleName(runtime.magazine.rounds(), runtime.magazine.capacity()));
+        updateRifleName(
+            player,
+            Component.text(
+                " [" + runtime.magazine.rounds() + "/" + runtime.magazine.capacity() + "]",
+                NamedTextColor.GRAY
+            ).decoration(TextDecoration.ITALIC, false),
+            NamedTextColor.AQUA
+        );
     }
 
-    private void updateRifleName(Player player, Component name) {
+    private void updateRifleName(Player player, Component suffix, NamedTextColor nameColor) {
         for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
             ItemStack item = player.getInventory().getItem(slot);
             if (!isRifle(item)) {
                 continue;
             }
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(name);
+            String displayName = meta.getPersistentDataContainer().getOrDefault(
+                plugin.rifleDisplayNameKey(),
+                PersistentDataType.STRING,
+                "저격총"
+            );
+            meta.displayName(Component.text(displayName, nameColor)
+                .decoration(TextDecoration.ITALIC, false)
+                .append(suffix));
             item.setItemMeta(meta);
             player.getInventory().setItem(slot, item);
-            return;
         }
     }
 
-    private static Component rifleName(int rounds, int capacity) {
-        return Component.text("저격총", NamedTextColor.AQUA)
+    private static Component rifleName(String displayName, int rounds, int capacity) {
+        return Component.text(displayName, NamedTextColor.AQUA)
             .decoration(TextDecoration.ITALIC, false)
             .append(Component.text(" [" + rounds + "/" + capacity + "]", NamedTextColor.GRAY)
                 .decoration(TextDecoration.ITALIC, false));
     }
 
-    private static Component reloadingRifleName(double remainingSeconds) {
-        return Component.text("저격총", NamedTextColor.AQUA)
-            .decoration(TextDecoration.ITALIC, false)
-            .append(Component.text(
-                String.format(Locale.ROOT, " [재장전 %.1f초]", remainingSeconds),
-                NamedTextColor.DARK_GRAY
-            ).decoration(TextDecoration.ITALIC, false));
+    private static Component reloadingRifleSuffix(double remainingSeconds) {
+        return Component.text(
+            String.format(Locale.ROOT, " [재장전 %.1f초]", remainingSeconds),
+            NamedTextColor.DARK_GRAY
+        ).decoration(TextDecoration.ITALIC, false);
     }
 
     private void fireHitscan(Player shooter, PluginSettings.RifleSettings rifle, boolean scopedShot) {

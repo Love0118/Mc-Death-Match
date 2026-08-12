@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
 class ResourcePackAssetsTest {
@@ -89,6 +90,42 @@ class ResourcePackAssetsTest {
         );
         assertTrue(thirdPersonRight.contains("\"rotation\": [\n        0,\n        90,\n        0"));
         assertTrue(thirdPersonLeft.contains("\"rotation\": [\n        0,\n        -90,\n        0"));
+    }
+
+    @Test
+    void handAuthoredAk47ModelAndItemDefinitionAreEmbedded() throws IOException {
+        Path item = PACK_ROOT.resolve("assets/jm/items/ak47.json");
+        Path model = PACK_ROOT.resolve("assets/jm/models/item/ak47.json");
+        Path texture = PACK_ROOT.resolve("assets/jm/textures/item/ak47_palette.png");
+        assertTrue(Files.readString(item).contains("jm:item/ak47"));
+        assertTrue(Files.size(model) > 500_000L);
+        assertTrue(Files.size(texture) > 100L);
+        String modelJson = Files.readString(model);
+        assertTrue(modelJson.contains("\"name\": \"barrel_bore_"));
+        assertTrue(modelJson.contains("\"name\": \"muzzle_bore_"));
+        assertTrue(modelJson.contains("\"name\": \"gas_tube_"));
+    }
+
+    @Test
+    void everyDebugRifleCatalogEntryHasCompletePackAssets() throws IOException {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(
+            Path.of("src/main/resources/config.yml").toFile()
+        );
+        for (PluginSettings.RifleModelSettings rifleModel : PluginSettings.load(config).debugRifleModels()) {
+            String[] location = rifleModel.itemModel().split(":", 2);
+            Path namespaceRoot = PACK_ROOT.resolve("assets").resolve(location[0]);
+            Path item = namespaceRoot.resolve("items").resolve(location[1] + ".json");
+            Path model = namespaceRoot.resolve("models/item").resolve(location[1] + ".json");
+            Path texture = namespaceRoot.resolve("textures/item").resolve(location[1] + "_palette.png");
+
+            assertTrue(Files.isRegularFile(item), rifleModel.id() + " item definition is missing");
+            assertTrue(Files.isRegularFile(model), rifleModel.id() + " model is missing");
+            assertTrue(Files.isRegularFile(texture), rifleModel.id() + " palette is missing");
+            assertTrue(
+                Files.readString(item).contains(rifleModel.itemModel().replace(":", ":item/")),
+                rifleModel.id() + " item definition points at the wrong model"
+            );
+        }
     }
 
     @Test

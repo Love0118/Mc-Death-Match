@@ -2,6 +2,7 @@ package kr.sniperpvp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.File;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -31,11 +32,29 @@ class PluginSettingsTest {
         assertEquals(0.03, settings.rifle().horizontalAimOffsetBlocks());
         assertEquals(90, settings.rifle().reloadTicks());
         assertEquals(14, settings.rifle().boltSoundDelayTicks());
+        assertEquals("jm:walnut_longline_mk2", settings.rifle().itemModel());
+        assertEquals(2, settings.debugRifleModels().size());
+        assertEquals("ak47", settings.debugRifleModels().getFirst().id());
+        assertEquals("AK-47", settings.debugRifleModels().getFirst().displayName());
+        assertEquals("jm:ak47", settings.debugRifleModels().getFirst().itemModel());
 
         assertEquals(3, settings.hud().maxKillBanners());
         assertEquals(5, settings.hud().maxKillLogEntries());
         assertEquals("sniperpvp:rifle.bolt", settings.sounds().bolt());
         assertEquals(1.0, settings.sounds().boltPitch());
         assertEquals(4, settings.killStreak().playDelayTicks());
+    }
+
+    @Test
+    void sourceConfigPreservesDebugRifleCatalogOrder() {
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("src/main/resources/config.yml"));
+        PluginSettings settings = PluginSettings.load(config);
+
+        assertEquals("jm:walnut_longline_mk2", settings.rifle().itemModel());
+        assertEquals(2, settings.debugRifleModels().size());
+        assertEquals("ak47", settings.debugRifleModels().get(0).id());
+        assertEquals("jm:ak47", settings.debugRifleModels().get(0).itemModel());
+        assertEquals("walnut_longline_mk2", settings.debugRifleModels().get(1).id());
+        assertEquals("jm:walnut_longline_mk2", settings.debugRifleModels().get(1).itemModel());
     }
 }

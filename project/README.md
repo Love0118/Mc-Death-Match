@@ -103,8 +103,9 @@ The 1.21.8 pack keeps the legacy text shader and metadata schema. Later packs us
 versioned metadata, and 26.2 uses the unified `text.vsh` entry point. A pack is never reused across an
 incompatible shader or metadata boundary.
 
-The supplied `walnut-longline-mk2-low-compact-scope` rifle is already embedded as
-`jm:walnut_longline_mk2`. An optional additional base pack can still be merged underneath:
+The hand-authored AK-47 is embedded as `jm:ak47`. The supplied
+`walnut-longline-mk2-low-compact-scope` remains the gameplay default as `jm:walnut_longline_mk2`, and both
+appear in the `/sni debug` model-selection GUI. An optional additional base pack can still be merged underneath:
 
 ```powershell
 .\project\Build-Server.ps1 -BaseResourcePack 'C:\path\to\extra-pack.zip'
@@ -145,11 +146,17 @@ the ignored runtime file `server/plugins/DropboxAutoResourcePack/config.yml`; ne
 - `/sni start` - reset scores/streaks/timer, spread current arena players, and equip them
 - `/sni stop` - stop combat and remove combat effects/rifles
 - `/sni give [player]` - issue the rifle
+- `/sni debug` - open the paginated gun-model GUI and receive only the selected rifle
 - `/sni spawn` - move to a weighted spawn
 - `/sni status` - show match/world/hitscan status
 - `/sni reload` - validate and reload gameplay config
 
 `/sniper` and `/snp` remain aliases, but the short operational command is `/sni`.
+
+`/sni debug` is catalog-driven and paginates up to 45 models per page. To add another selectable gun,
+place its item definition, model JSON and palette PNG under one namespace in `resource-pack/assets`, then add
+its `id`, `display-name`, `item-model` and `custom-model-data` under `debug.rifle-models` in `config.yml`.
+The build tests reject catalog entries whose three pack assets are incomplete.
 
 Most balance values are in `server/plugins/SniperPvp/config.yml` after first start, with source defaults in
 `src/main/resources/config.yml`.
