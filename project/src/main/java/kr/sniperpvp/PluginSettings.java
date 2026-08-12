@@ -62,6 +62,8 @@ public record PluginSettings(
             positive(config.getDouble("rifle.range", 350.0), "rifle.range"),
             nonNegative(config.getDouble("rifle.hitbox-expansion", 0.20), "rifle.hitbox-expansion"),
             nonNegative(config.getDouble("rifle.unscoped-spread", 0.05), "rifle.unscoped-spread"),
+            finite(config.getDouble("rifle.horizontal-aim-compensation-degrees", 0.10),
+                "rifle.horizontal-aim-compensation-degrees"),
             positiveInt(config.getInt("rifle.cooldown-ticks", 30), "rifle.cooldown-ticks"),
             positiveInt(config.getInt("rifle.magazine-size", 5), "rifle.magazine-size"),
             positiveInt(config.getInt("rifle.reload-ticks", 90), "rifle.reload-ticks"),
@@ -164,6 +166,13 @@ public record PluginSettings(
         return value;
     }
 
+    private static double finite(double value, String path) {
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException(path + " must be a finite value");
+        }
+        return value;
+    }
+
     private static double ratio(double value, String path) {
         if (!Double.isFinite(value) || value <= 0.0 || value >= 1.0) {
             throw new IllegalArgumentException(path + " must be between zero and one");
@@ -218,6 +227,7 @@ public record PluginSettings(
         double range,
         double hitboxExpansion,
         double unscopedSpread,
+        double horizontalAimCompensationDegrees,
         int cooldownTicks,
         int magazineSize,
         int reloadTicks,

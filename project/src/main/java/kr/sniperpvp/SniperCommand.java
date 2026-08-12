@@ -124,7 +124,12 @@ final class SniperCommand implements CommandExecutor, TabCompleter {
     private boolean reload(CommandSender sender) {
         try {
             plugin.reloadPluginSettings();
-            sender.sendMessage(Component.text("config.yml을 다시 읽었습니다.", NamedTextColor.GREEN));
+            double compensation = plugin.settings().rifle().horizontalAimCompensationDegrees();
+            sender.sendMessage(Component.text(String.format(
+                Locale.ROOT,
+                "config.yml을 다시 읽었습니다. 수평 조준 보정: %+.3f°",
+                compensation
+            ), NamedTextColor.GREEN));
         } catch (IllegalArgumentException exception) {
             sender.sendMessage(Component.text(
                 "설정 오류: " + exception.getMessage(),

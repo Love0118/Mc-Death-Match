@@ -85,8 +85,13 @@ final class SniperListener implements Listener {
 
     @EventHandler
     public void onResourcePackStatus(PlayerResourcePackStatusEvent event) {
-        boolean loaded = event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED;
-        game.setResourcePackLoaded(event.getPlayer(), loaded);
+        // A resource-pack request emits ACCEPTED/DOWNLOADED before it is fully applied, and
+        // Paper may emit additional lifecycle statuses later. Once this required pack has
+        // loaded, keep that state for the player's connection instead of treating every
+        // non-success status as an unload.
+        if (event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
+            game.setResourcePackLoaded(event.getPlayer(), true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -179,13 +184,13 @@ final class SniperListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onDrop(PlayerDropItemEvent event) {
         if (arena.isArena(event.getPlayer()) && game.isRunning()) {
             boolean rifle = gun.isRifle(event.getItemDrop().getItemStack());
             event.setCancelled(true);
             if (rifle) {
-                plugin.getServer().getScheduler().runTask(plugin, () -> gun.tryReload(event.getPlayer()));
+                gun.tryReloadFromDrop(event.getPlayer(), event.getItemDrop().getItemStack());
             }
         }
     }

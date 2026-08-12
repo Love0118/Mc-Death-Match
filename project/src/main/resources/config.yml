@@ -45,6 +45,9 @@ rifle:
   hitbox-expansion: 0.20
   # Maximum tangent spread while hip-firing: 0.05 is about 5 blocks of offset per 100 blocks.
   unscoped-spread: 0.05
+  # Horizontal hitscan correction in degrees. Positive moves the shot right; negative moves it left.
+  # /sni reload applies this immediately without restarting the server.
+  horizontal-aim-compensation-degrees: 0.10
   cooldown-ticks: 30
   magazine-size: 5
   reload-ticks: 90

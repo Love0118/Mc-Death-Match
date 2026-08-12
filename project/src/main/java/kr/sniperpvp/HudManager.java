@@ -191,11 +191,15 @@ final class HudManager {
     }
 
     void removePlayer(Player player) {
+        hidePlayer(player);
+        resourcePackLoaded.remove(player.getUniqueId());
+    }
+
+    void hidePlayer(Player player) {
         hideBossBar(player);
         hideHealthBar(player);
         hideKillBanners(player);
         restoreScoreboard(player);
-        resourcePackLoaded.remove(player.getUniqueId());
     }
 
     void hideAll() {
@@ -227,7 +231,6 @@ final class HudManager {
                 previousScoreboards.remove(playerId);
             }
         }
-        resourcePackLoaded.clear();
     }
 
     void clearKillBanners() {
@@ -275,7 +278,6 @@ final class HudManager {
                 healthBars.remove(playerId);
                 healthSnapshots.remove(playerId);
                 previousScoreboards.remove(playerId);
-                resourcePackLoaded.remove(playerId);
             }
         }
     }
@@ -308,6 +310,7 @@ final class HudManager {
     private BossBar showBossBar(Player player) {
         BossBar existing = bossBars.get(player.getUniqueId());
         if (existing != null) {
+            player.showBossBar(existing);
             return existing;
         }
         BossBar created = BossBar.bossBar(
@@ -336,6 +339,9 @@ final class HudManager {
             player.showBossBar(created);
             return created;
         });
+        // The client can drop its BossBar viewers while changing from the death screen back
+        // to a live player. Re-showing an existing bar is idempotent and repairs that viewer.
+        player.showBossBar(bar);
         AttributeInstance maximum = player.getAttribute(Attribute.MAX_HEALTH);
         double maximumHealth = Math.max(1.0, maximum == null ? 20.0 : maximum.getValue());
         int maxHealth = (int) Math.ceil(maximumHealth + settings.get().game().absorption());

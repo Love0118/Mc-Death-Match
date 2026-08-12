@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -36,13 +38,12 @@ final class KillStreakManager {
         BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             pendingSounds.remove(killerId);
             if (killer.isOnline()) {
-                killer.playSound(
-                    killer.getLocation(),
-                    soundKey,
-                    SoundCategory.MASTER,
+                killer.playSound(Sound.sound(
+                    Key.key(soundKey),
+                    Sound.Source.PLAYER,
                     (float) sound.volume(),
                     (float) sound.pitch()
-                );
+                ), Sound.Emitter.self());
             }
         }, sound.playDelayTicks());
         pendingSounds.put(killerId, task);

@@ -196,7 +196,7 @@ final class GameManager {
     void handleArenaExit(Player player) {
         cancelProtection(player.getUniqueId());
         nextRegenerationTicks.remove(player.getUniqueId());
-        hud.removePlayer(player);
+        hud.hidePlayer(player);
         removeCombatState(player);
         refreshHud();
     }
@@ -258,6 +258,7 @@ final class GameManager {
                 player.setGameMode(GameMode.SPECTATOR);
                 player.setInvulnerable(true);
                 player.removePotionEffect(PotionEffectType.GLOWING);
+                refreshHud();
                 BukkitTask delayedEquip = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     respawnTasks.remove(playerId);
                     respawnReadyTicks.remove(playerId);

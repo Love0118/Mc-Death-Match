@@ -28,6 +28,7 @@ class PluginSettingsTest {
         assertEquals(0.75, settings.rifle().headHeightRatio());
         assertEquals(0.20, settings.rifle().hitboxExpansion());
         assertEquals(0.05, settings.rifle().unscopedSpread());
+        assertEquals(0.10, settings.rifle().horizontalAimCompensationDegrees());
         assertEquals(90, settings.rifle().reloadTicks());
         assertEquals(14, settings.rifle().boltSoundDelayTicks());
 

@@ -44,6 +44,7 @@ final class GunService {
     private static final long NANOS_PER_TICK = 50_000_000L;
     private static final long EVENT_DEDUPLICATION_NANOS = 20_000_000L;
     private static final long FEEDBACK_THROTTLE_NANOS = 250_000_000L;
+    private static final long RELOAD_INPUT_FIRE_BLOCK_TICKS = 2L;
     private static final NamespacedKey SCOPE_OVERLAY = NamespacedKey.fromString("sniperpvp:misc/scope");
 
     private final SniperPvpPlugin plugin;
@@ -53,6 +54,7 @@ final class GunService {
     private final Set<UUID> applyingShotDamage = new HashSet<>();
     private final Map<UUID, Long> lastTriggerNanos = new HashMap<>();
     private final Map<UUID, Long> lastFeedbackNanos = new HashMap<>();
+    private final Map<UUID, Long> fireBlockedUntilTick = new HashMap<>();
     private final Map<UUID, ShotHit> latestHits = new HashMap<>();
     private final Map<UUID, GunRuntime> runtimes = new HashMap<>();
 
@@ -106,7 +108,7 @@ final class GunService {
     }
 
     void toggleZoom(Player player, ItemStack item) {
-        if (!isRifle(item) || !gameRunning.getAsBoolean() || !arena.isArena(player)) {
+        if (!isRifle(item) || !canOperateRifle(player)) {
             return;
         }
         GunRuntime runtime = runtimeFor(player);
@@ -141,10 +143,27 @@ final class GunService {
     }
 
     boolean tryReload(Player player) {
-        if (!gameRunning.getAsBoolean() || !arena.isArena(player)
-            || !isRifle(player.getInventory().getItemInMainHand())) {
+        if (!canOperateRifle(player) || !isRifle(player.getInventory().getItemInMainHand())) {
             return false;
         }
+        return beginManualReload(player);
+    }
+
+    boolean tryReloadFromDrop(Player player, ItemStack droppedItem) {
+        if (!canOperateRifle(player) || !isRifle(droppedItem)) {
+            return false;
+        }
+        fireBlockedUntilTick.put(
+            player.getUniqueId(),
+            (long) Bukkit.getCurrentTick() + RELOAD_INPUT_FIRE_BLOCK_TICKS
+        );
+        // A cancelled drop is restored to the inventory after PlayerDropItemEvent returns.
+        // Start the reload one tick later, but block the accompanying swing immediately.
+        plugin.getServer().getScheduler().runTask(plugin, () -> tryReload(player));
+        return true;
+    }
+
+    private boolean beginManualReload(Player player) {
         GunRuntime runtime = runtimeFor(player);
         if (runtime.reloading || runtime.magazine.isFull()) {
             return false;
@@ -157,12 +176,18 @@ final class GunService {
     }
 
     boolean tryFire(Player shooter) {
-        if (!gameRunning.getAsBoolean() || !arena.isArena(shooter)
-            || !isRifle(shooter.getInventory().getItemInMainHand())) {
+        if (!canOperateRifle(shooter) || !isRifle(shooter.getInventory().getItemInMainHand())) {
             return false;
         }
 
         UUID playerId = shooter.getUniqueId();
+        Long blockedUntilTick = fireBlockedUntilTick.get(playerId);
+        if (blockedUntilTick != null) {
+            if (Bukkit.getCurrentTick() <= blockedUntilTick) {
+                return false;
+            }
+            fireBlockedUntilTick.remove(playerId, blockedUntilTick);
+        }
         long now = System.nanoTime();
         long previousTrigger = lastTriggerNanos.getOrDefault(playerId, 0L);
         if (now - previousTrigger < EVENT_DEDUPLICATION_NANOS) {
@@ -230,6 +255,7 @@ final class GunService {
         applyingShotDamage.remove(id);
         lastTriggerNanos.remove(id);
         lastFeedbackNanos.remove(id);
+        fireBlockedUntilTick.remove(id);
         latestHits.remove(id);
         latestHits.entrySet().removeIf(entry -> entry.getValue().shooterId().equals(id));
     }
@@ -252,6 +278,7 @@ final class GunService {
         applyingShotDamage.clear();
         lastTriggerNanos.clear();
         lastFeedbackNanos.clear();
+        fireBlockedUntilTick.clear();
         latestHits.clear();
     }
 
@@ -396,9 +423,15 @@ final class GunService {
 
     private boolean isActive(Player player, GunRuntime runtime) {
         return player.isOnline()
-            && gameRunning.getAsBoolean()
-            && arena.isArena(player)
+            && canOperateRifle(player)
             && runtimes.get(player.getUniqueId()) == runtime;
+    }
+
+    private boolean canOperateRifle(Player player) {
+        return gameRunning.getAsBoolean()
+            && arena.isArena(player)
+            && !player.isDead()
+            && player.getGameMode() == GameMode.ADVENTURE;
     }
 
     private void showUnavailable(Player player, GunRuntime runtime) {
@@ -449,6 +482,7 @@ final class GunService {
 
     private void fireHitscan(Player shooter, PluginSettings.RifleSettings rifle, boolean scopedShot) {
         org.bukkit.Location start = shooter.getEyeLocation();
+        start.setYaw(start.getYaw() + (float) rifle.horizontalAimCompensationDegrees());
         Vector direction = start.getDirection().normalize();
         if (!scopedShot && rifle.unscopedSpread() > 0.0) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
