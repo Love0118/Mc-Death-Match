@@ -19,11 +19,11 @@ import org.junit.jupiter.api.Test;
 class ResourcePackAssetsTest {
     private static final Path PACK_ROOT = Path.of("resource-pack");
     private static final Map<Integer, String> KILL_SOUND_SHA256 = Map.of(
-        1, "aa824edbdc8a2abea8d2adfc9304a049dd8f6618650d9c1441d2cea241c6e15e",
-        2, "aa403f92b0447ccfb18cc4d32d0ac71e7b519de9a2513010ce55522fbd9e3516",
-        3, "4d207e5bfd8ac013d4cd6b807bf09e30f9a900bcbcbc2df406b8b4cb80bc5f23",
-        4, "21bf2254ce263502a28996c8817a392b24910ebb788aab6e9817b98476db8c97",
-        5, "3de9da6b41400c034fa82cd46ce80d8d667197313b6e319a65761dc53dbf4dcb"
+        1, "50de4010f88be0a3011d60af67f29cec9acb6cd43a258fcd5150dc3cb135fca8",
+        2, "a40e268608cfdb06c94235771a86ff19b0a1eaf344cfca6fb181e499da649bc0",
+        3, "df6804d4b1f867bb5b6068325be92bb5729ff62c99f653e51ed1eb9529bb54fe",
+        4, "bf623ad43270fce046e616d259e0149f5896a08d3bff7c32e03dcaf5312cf89d",
+        5, "dc32c97c143597d8b9cec7c164f9e3ada9d725f4838e58a686fae5c13243888a"
     );
 
     @Test
@@ -67,6 +67,16 @@ class ResourcePackAssetsTest {
         String modelJson = Files.readString(model).replace("\r\n", "\n");
         assertEquals(2, occurrences(modelJson, "\"scale\": [\n        0.46,\n        0.46,\n        0.46"));
         assertEquals(2, occurrences(modelJson, "\"scale\": [\n        0.39,\n        0.39,\n        0.39"));
+        String thirdPersonRight = modelJson.substring(
+            modelJson.indexOf("\"thirdperson_righthand\""),
+            modelJson.indexOf("\"thirdperson_lefthand\"")
+        );
+        String thirdPersonLeft = modelJson.substring(
+            modelJson.indexOf("\"thirdperson_lefthand\""),
+            modelJson.indexOf("\"firstperson_righthand\"")
+        );
+        assertTrue(thirdPersonRight.contains("\"rotation\": [\n        0,\n        90,\n        0"));
+        assertTrue(thirdPersonLeft.contains("\"rotation\": [\n        0,\n        -90,\n        0"));
     }
 
     @Test

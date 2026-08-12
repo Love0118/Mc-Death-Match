@@ -3,8 +3,8 @@
 - Rifle model and palette: user-supplied
   `walnut-longline-mk2-low-compact-scope-20260811-222044.zip`.
 - Kill streak audio: user-supplied `valorant-1-kill.mp3` through `valorant-5-kills.mp3`.
-  Each waveform was multiplied by exactly `0.4`, downmixed to mono, resampled to 48 kHz and encoded as
-  OGG Vorbis for Minecraft playback.
+  Each source was converted without gain reduction, downmixed to mono, resampled to 48 kHz and encoded
+  as OGG Vorbis for Minecraft playback.
 - Bolt-action audio: user-supplied
   `freesound_community-mosin-nagant-bolt-fast-104031.mp3`, converted to OGG without gain changes.
 - Match defeat source requested by the user:

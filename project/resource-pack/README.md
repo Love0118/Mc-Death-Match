@@ -7,9 +7,10 @@ merge another pack underneath it, then produces `dist/sniper-pvp-1.21.8.zip` and
 
 - `sniperpvp:kill.1` through `sniperpvp:kill.5`
 - standard mono 48 kHz OGG Vorbis audio converted from the five supplied MP3 files and preloaded by Minecraft
-- waveform amplitude multiplied by exactly `0.4` before OGG encoding (about `-7.96 dB`)
+- source waveform volume preserved during OGG encoding
 - pack format `64`, restricted to Minecraft 1.21.8
 - the supplied `jm:walnut_longline_mk2` item model, palette and item definition
+- separate horizontal third-person rifle transforms without changing the established first-person view
 - Valorant-inspired nickname/kill cards, centered timer, private three-entry banners and a global upper-right kill log
 - transparent native white BossBar sprites so only the custom panels are visible
 - the reference stepped bottom health bar and Orbitron digits, plus transparent vanilla health/hunger sprites

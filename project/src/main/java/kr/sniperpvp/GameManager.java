@@ -33,6 +33,9 @@ import org.bukkit.scheduler.BukkitTask;
 
 final class GameManager {
     private static final long TICKS_PER_SECOND = 20L;
+    // Vanilla swing duration is 6 - (1 + amplifier). Amplifier 4 reduces the locally
+    // predicted first-person swing to one tick without entering invalid zero-tick math.
+    private static final int RIFLE_SWING_HASTE_AMPLIFIER = 4;
 
     private final SniperPvpPlugin plugin;
     private final Supplier<PluginSettings> settings;
@@ -361,6 +364,7 @@ final class GameManager {
         nextRegenerationTicks.remove(player.getUniqueId());
 
         applyCombatMovement(player);
+        applyHiddenRifleSwingSpeed(player);
         if (protectedSpawn) {
             beginSpawnProtection(player);
         } else {
@@ -667,6 +671,17 @@ final class GameManager {
         ));
     }
 
+    private void applyHiddenRifleSwingSpeed(Player player) {
+        player.addPotionEffect(new PotionEffect(
+            PotionEffectType.HASTE,
+            PotionEffect.INFINITE_DURATION,
+            RIFLE_SWING_HASTE_AMPLIFIER,
+            false,
+            false,
+            false
+        ));
+    }
+
     private void applyCombatMovement(Player player) {
         player.removePotionEffect(PotionEffectType.SPEED);
         player.removePotionEffect(PotionEffectType.JUMP_BOOST);
@@ -727,6 +742,7 @@ final class GameManager {
         player.removePotionEffect(PotionEffectType.SPEED);
         player.removePotionEffect(PotionEffectType.JUMP_BOOST);
         player.removePotionEffect(PotionEffectType.GLOWING);
+        player.removePotionEffect(PotionEffectType.HASTE);
         removeCombatMovement(player);
         restorePreviousHealth(player);
         for (int slot = 0; slot < player.getInventory().getSize(); slot++) {

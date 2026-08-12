@@ -11,10 +11,12 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
   1.21.8 client still sends left-click attacks.
 - Left click: instant server-side ray trace up to 350 blocks. Player hitboxes receive a 0.20-block targeting
   margin. The first concrete block or player hit wins, so cover cannot be penetrated and no projectile entity
-  is created.
+  is created. The vanilla melee swing is not broadcast to other players, and the shooter's unavoidable local
+  client prediction is shortened from six ticks to one tick with a hidden effect.
 - Scoped shots are perfectly accurate. Hip-fire uses a uniform 5% tangent spread (at most about 5
   blocks of offset per 100 blocks of travel). `rifle.horizontal-aim-offset-blocks` shifts the parallel
   hitscan ray by a fixed amount; positive values move it right and `/sni reload` applies changes immediately.
+  This correction affects hit detection only; the visible tracer always starts at the unshifted eye line.
 - The hitscan trail uses the same white-to-gray dust transition, electric spark and mycelium combination
   as Below the Loop's sniper projectile, sampled every 0.75 blocks and force-sent for clear visibility.
 - Hit height selects exact damage: legs 70, body 100 and head 150. Each life starts with 100 health plus
@@ -56,7 +58,7 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 - Forty spawn candidates are distributed across three rings.
 - Respawn is weighted toward low-population areas. Nearby players sharply reduce a point's probability,
   and a point used within the last five seconds receives an extra temporary penalty.
-- Consecutive kills play the exact supplied, pre-scaled Valorant 1-5 kill sounds only to the killer. The
+- Consecutive kills play the exact supplied, full-volume Valorant 1-5 kill sounds only to the killer. The
   standard OGG Vorbis files are preloaded and the private self-emitted cue follows the gunshot transient
   by four ticks. Kill six and above reuse sound 5, death resets to sound 1, and generic hit audio is
   suppressed on lethal shots.

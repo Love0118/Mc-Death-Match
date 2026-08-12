@@ -62,7 +62,7 @@ public record PluginSettings(
             positive(config.getDouble("rifle.range", 350.0), "rifle.range"),
             nonNegative(config.getDouble("rifle.hitbox-expansion", 0.20), "rifle.hitbox-expansion"),
             nonNegative(config.getDouble("rifle.unscoped-spread", 0.05), "rifle.unscoped-spread"),
-            finite(config.getDouble("rifle.horizontal-aim-offset-blocks", 0.10),
+            finite(config.getDouble("rifle.horizontal-aim-offset-blocks", 0.03),
                 "rifle.horizontal-aim-offset-blocks"),
             positiveInt(config.getInt("rifle.cooldown-ticks", 30), "rifle.cooldown-ticks"),
             positiveInt(config.getInt("rifle.magazine-size", 5), "rifle.magazine-size"),

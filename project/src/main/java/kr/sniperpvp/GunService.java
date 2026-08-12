@@ -481,11 +481,12 @@ final class GunService {
     }
 
     private void fireHitscan(Player shooter, PluginSettings.RifleSettings rifle, boolean scopedShot) {
-        org.bukkit.Location start = shooter.getEyeLocation();
-        double yawRadians = Math.toRadians(start.getYaw());
+        org.bukkit.Location visualStart = shooter.getEyeLocation();
+        org.bukkit.Location hitScanStart = visualStart.clone();
+        double yawRadians = Math.toRadians(hitScanStart.getYaw());
         Vector horizontalRight = new Vector(-Math.cos(yawRadians), 0.0, -Math.sin(yawRadians));
-        start.add(horizontalRight.multiply(rifle.horizontalAimOffsetBlocks()));
-        Vector direction = start.getDirection().normalize();
+        hitScanStart.add(horizontalRight.multiply(rifle.horizontalAimOffsetBlocks()));
+        Vector direction = hitScanStart.getDirection().normalize();
         if (!scopedShot && rifle.unscopedSpread() > 0.0) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             direction = AimSpread.apply(
@@ -496,7 +497,7 @@ final class GunService {
             );
         }
         RayTraceResult result = shooter.getWorld().rayTrace(
-            start,
+            hitScanStart,
             direction,
             rifle.range(),
             FluidCollisionMode.NEVER,
@@ -506,11 +507,11 @@ final class GunService {
         );
 
         Vector hitPosition = result == null
-            ? start.toVector().add(direction.clone().multiply(rifle.range()))
+            ? hitScanStart.toVector().add(direction.clone().multiply(rifle.range()))
             : result.getHitPosition();
-        double traceDistance = hitPosition.distance(start.toVector());
+        double traceDistance = hitPosition.distance(hitScanStart.toVector());
         if (rifle.tracerEnabled()) {
-            drawTracer(shooter, start.toVector(), direction, traceDistance, rifle.tracerSpacing());
+            drawTracer(shooter, visualStart.toVector(), direction, traceDistance, rifle.tracerSpacing());
         }
 
         if (result == null || !(result.getHitEntity() instanceof Player target)) {

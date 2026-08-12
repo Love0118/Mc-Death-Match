@@ -96,7 +96,14 @@ final class SniperListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onArmSwing(PlayerArmSwingEvent event) {
-        if (event.getHand() == EquipmentSlot.HAND && gun.tryFire(event.getPlayer())) {
+        if (event.getHand() != EquipmentSlot.HAND
+            || !gun.isRifle(event.getPlayer().getInventory().getItemInMainHand())) {
+            return;
+        }
+        // Do not broadcast the vanilla melee swing to other players. The shooter's local
+        // prediction is shortened separately to one tick by the hidden Haste effect.
+        event.setCancelled(true);
+        if (gun.tryFire(event.getPlayer())) {
             game.markCombat(event.getPlayer());
         }
     }
