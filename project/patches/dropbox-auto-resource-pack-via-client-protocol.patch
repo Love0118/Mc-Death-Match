@@ -1,0 +1,194 @@
+diff --git a/pom.xml b/pom.xml
+index 22d89f2..c93b60d 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -24,6 +24,10 @@
+             <id>papermc</id>
+             <url>https://repo.papermc.io/repository/maven-public/</url>
+         </repository>
++        <repository>
++            <id>viaversion</id>
++            <url>https://repo.viaversion.com</url>
++        </repository>
+     </repositories>
+ 
+     <dependencies>
+@@ -33,6 +37,12 @@
+             <version>${paper.version}</version>
+             <scope>provided</scope>
+         </dependency>
++        <dependency>
++            <groupId>com.viaversion</groupId>
++            <artifactId>viaversion-api</artifactId>
++            <version>5.11.0</version>
++            <scope>provided</scope>
++        </dependency>
+         <dependency>
+             <groupId>org.junit.jupiter</groupId>
+             <artifactId>junit-jupiter</artifactId>
+diff --git a/src/main/java/com/dropboxautoresourcepack/AutoResourcePackService.java b/src/main/java/com/dropboxautoresourcepack/AutoResourcePackService.java
+index 6df58ce..7a729b6 100644
+--- a/src/main/java/com/dropboxautoresourcepack/AutoResourcePackService.java
++++ b/src/main/java/com/dropboxautoresourcepack/AutoResourcePackService.java
+@@ -402,7 +402,29 @@ final class AutoResourcePackService implements Listener {
+         if (stopped || !settings.enabled() || !player.isOnline()) {
+             return false;
+         }
+-        int protocol = player.getProtocolVersion();
++        int paperProtocol = player.getProtocolVersion();
++        boolean viaEnabled = Bukkit.getPluginManager().isPluginEnabled("ViaVersion");
++        Integer viaProtocol = null;
++        if (viaEnabled) {
++            try {
++                viaProtocol = ViaProtocolLookup.getPlayerProtocol(player.getUniqueId());
++            } catch (RuntimeException | LinkageError throwable) {
++                plugin.getLogger().warning("ViaVersion protocol lookup failed for " + player.getName()
++                    + ": " + rootMessage(throwable));
++            }
++        }
++        ClientProtocolSelector.Selection selection = ClientProtocolSelector.select(
++            paperProtocol,
++            viaEnabled,
++            viaProtocol
++        );
++        if (!selection.resolved()) {
++            plugin.getLogger().warning("Did not send a resource pack to " + player.getName()
++                + ": ViaVersion is enabled but the original client protocol is unavailable"
++                + " (Paper reported " + paperProtocol + ")");
++            return false;
++        }
++        int protocol = selection.protocol();
+         Publication current = publications.values().stream()
+             .filter(publication -> publication.settings().matchesProtocol(protocol))
+             .findFirst()
+@@ -415,6 +437,10 @@ final class AutoResourcePackService implements Listener {
+             return false;
+         }
+         loadedPlayers.remove(player.getUniqueId());
++        plugin.getLogger().info("Resource pack selected for " + player.getName()
++            + ": protocol=" + protocol + " (" + ClientVersionRegistry.displayVersion(protocol) + ")"
++            + ", source=" + selection.source() + ", paperProtocol=" + paperProtocol
++            + ", pack=" + current.settings().id() + ", sha1=" + current.artifact().hashHex());
+         String promptText = settings.delivery().prompt();
+         Component prompt = promptText.isBlank() ? Component.empty() : Component.text(promptText);
+         player.setResourcePack(
+diff --git a/src/main/java/com/dropboxautoresourcepack/ClientProtocolSelector.java b/src/main/java/com/dropboxautoresourcepack/ClientProtocolSelector.java
+new file mode 100644
+index 0000000..706bdd1
+--- /dev/null
++++ b/src/main/java/com/dropboxautoresourcepack/ClientProtocolSelector.java
+@@ -0,0 +1,22 @@
++package com.dropboxautoresourcepack;
++
++final class ClientProtocolSelector {
++    private ClientProtocolSelector() {
++    }
++
++    static Selection select(int paperProtocol, boolean viaEnabled, Integer viaProtocol) {
++        if (!viaEnabled) {
++            return new Selection(paperProtocol, "Paper");
++        }
++        if (viaProtocol == null || viaProtocol < 0) {
++            return new Selection(null, "ViaVersion-unavailable");
++        }
++        return new Selection(viaProtocol, "ViaVersion");
++    }
++
++    record Selection(Integer protocol, String source) {
++        boolean resolved() {
++            return protocol != null;
++        }
++    }
++}
+diff --git a/src/main/java/com/dropboxautoresourcepack/ViaProtocolLookup.java b/src/main/java/com/dropboxautoresourcepack/ViaProtocolLookup.java
+new file mode 100644
+index 0000000..8e75efd
+--- /dev/null
++++ b/src/main/java/com/dropboxautoresourcepack/ViaProtocolLookup.java
+@@ -0,0 +1,21 @@
++package com.dropboxautoresourcepack;
++
++import com.viaversion.viaversion.api.Via;
++import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
++import java.util.UUID;
++
++final class ViaProtocolLookup {
++    private ViaProtocolLookup() {
++    }
++
++    static Integer getPlayerProtocol(UUID playerId) {
++        if (!Via.isLoaded()) {
++            return null;
++        }
++        ProtocolVersion version = Via.getAPI().getPlayerProtocolVersion(playerId);
++        if (version == null || !version.isKnown()) {
++            return null;
++        }
++        return version.getVersion();
++    }
++}
+diff --git a/src/main/resources/plugin.yml b/src/main/resources/plugin.yml
+index e853904..d273563 100644
+--- a/src/main/resources/plugin.yml
++++ b/src/main/resources/plugin.yml
+@@ -4,6 +4,7 @@ main: com.dropboxautoresourcepack.DropboxAutoResourcePackPlugin
+ api-version: '1.21.8'
+ description: Publishes and automatically applies a resource pack through Dropbox on Paper 1.21.8-26.2.
+ author: Jaeyun
++softdepend: [ViaVersion]
+ commands:
+   darp:
+     aliases: [dar]
+diff --git a/src/test/java/com/dropboxautoresourcepack/ClientProtocolSelectorTest.java b/src/test/java/com/dropboxautoresourcepack/ClientProtocolSelectorTest.java
+new file mode 100644
+index 0000000..831da7e
+--- /dev/null
++++ b/src/test/java/com/dropboxautoresourcepack/ClientProtocolSelectorTest.java
+@@ -0,0 +1,35 @@
++package com.dropboxautoresourcepack;
++
++import static org.junit.jupiter.api.Assertions.assertEquals;
++import static org.junit.jupiter.api.Assertions.assertFalse;
++import static org.junit.jupiter.api.Assertions.assertTrue;
++
++import org.junit.jupiter.api.Test;
++
++class ClientProtocolSelectorTest {
++    @Test
++    void viaOriginalProtocolWinsOverTranslatedPaperProtocol() {
++        ClientProtocolSelector.Selection selection = ClientProtocolSelector.select(776, true, 772);
++
++        assertTrue(selection.resolved());
++        assertEquals(772, selection.protocol());
++        assertEquals("ViaVersion", selection.source());
++    }
++
++    @Test
++    void directConnectionUsesPaperProtocolWhenViaIsDisabled() {
++        ClientProtocolSelector.Selection selection = ClientProtocolSelector.select(776, false, null);
++
++        assertTrue(selection.resolved());
++        assertEquals(776, selection.protocol());
++        assertEquals("Paper", selection.source());
++    }
++
++    @Test
++    void missingViaProtocolFailsClosedInsteadOfSendingTranslatedPack() {
++        ClientProtocolSelector.Selection selection = ClientProtocolSelector.select(776, true, null);
++
++        assertFalse(selection.resolved());
++        assertEquals("ViaVersion-unavailable", selection.source());
++    }
++}
+diff --git a/src/test/java/com/dropboxautoresourcepack/CompatibilityMetadataTest.java b/src/test/java/com/dropboxautoresourcepack/CompatibilityMetadataTest.java
+index 71ff8e2..eb6c026 100644
+--- a/src/test/java/com/dropboxautoresourcepack/CompatibilityMetadataTest.java
++++ b/src/test/java/com/dropboxautoresourcepack/CompatibilityMetadataTest.java
+@@ -21,6 +21,7 @@ class CompatibilityMetadataTest {
+ 
+         assertTrue(pluginYaml.contains("version: '1.1.1'"));
+         assertTrue(pluginYaml.contains("api-version: '1.21.8'"));
++        assertTrue(pluginYaml.contains("softdepend: [ViaVersion]"));
+     }
+ 
+     @Test
