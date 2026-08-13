@@ -69,93 +69,69 @@ public final class ArenaBlueprint {
         int maxX,
         boolean outerEdgeAtMinimumX
     ) {
-        add(blocks, minX, 71, -140, maxX, SECOND_FLOOR_Y, 140);
-        add(blocks, minX, 65, -140, maxX, 70, -136);
-        add(blocks, minX, 65, 136, maxX, 70, 140);
-
-        int outerMinX = outerEdgeAtMinimumX ? minX : maxX - 3;
-        int outerMaxX = outerEdgeAtMinimumX ? minX + 3 : maxX;
-        int innerMinX = outerEdgeAtMinimumX ? maxX - 3 : minX;
-        int innerMaxX = outerEdgeAtMinimumX ? maxX : minX + 3;
-        add(blocks, outerMinX, 65, -135, outerMaxX, 70, 135);
-        for (int supportZ : new int[]{-100, -34, 34, 100}) {
-            add(blocks, innerMinX, 65, supportZ - 6, innerMaxX, 70, supportZ + 6);
-        }
-
-        add(blocks, minX, 79, -48, maxX, THIRD_FLOOR_Y, 48);
-        add(blocks, minX, 73, -48, maxX, 78, -45);
-        add(blocks, minX, 73, 45, maxX, 78, 48);
-        add(blocks, outerMinX, 73, -44, outerMaxX, 78, 44);
-        add(blocks, innerMinX, 73, -44, innerMaxX, 78, -28);
-        add(blocks, innerMinX, 73, -10, innerMaxX, 78, 10);
-        add(blocks, innerMinX, 73, 28, innerMaxX, 78, 44);
-
-        addSideDeckCover(
-            blocks,
-            minX,
-            maxX,
-            innerMinX,
-            innerMaxX,
-            outerEdgeAtMinimumX
-        );
+        add(blocks, minX, 65, -140, maxX, SECOND_FLOOR_Y, 140);
+        add(blocks, minX, SECOND_FLOOR_Y + 1, -48,
+            maxX, THIRD_FLOOR_Y, 48);
+        addSideDeckCover(blocks, minX, maxX, outerEdgeAtMinimumX);
     }
 
     private static void addSideDeckCover(
         Set<BlockBox> blocks,
         int minX,
         int maxX,
-        int innerMinX,
-        int innerMaxX,
         boolean outerEdgeAtMinimumX
     ) {
-        add(blocks, minX + 6, 73, -124, maxX - 6, 75, -120);
-        add(blocks, minX + 6, 73, 120, maxX - 6, 75, 124);
-        int innerCoverMinX = Math.max(minX, innerMinX - 5);
-        int innerCoverMaxX = Math.min(maxX, innerMaxX + 5);
+        add(blocks, minX + 5, 73, -126, maxX - 5, 75, -120);
+        add(blocks, minX + 5, 73, 120, maxX - 5, 75, 126);
+        int innerCoverMinX = outerEdgeAtMinimumX ? maxX - 8 : minX;
+        int innerCoverMaxX = outerEdgeAtMinimumX ? maxX : minX + 8;
         add(blocks, innerCoverMinX, 73, -92, innerCoverMaxX, 75, -76);
         add(blocks, innerCoverMinX, 73, 76, innerCoverMaxX, 75, 92);
 
+        add(blocks, minX + 5, 73, -108, minX + 13, 75, -101);
+        add(blocks, maxX - 13, 73, -67, maxX - 5, 76, -59);
+        add(blocks, minX + 8, 73, 59, minX + 16, 76, 67);
+        add(blocks, maxX - 14, 73, 101, maxX - 5, 75, 108);
+
         int middleX = (minX + maxX) / 2;
-        add(blocks, minX + 6, 81, -34, middleX - 2, 83, -30);
-        add(blocks, middleX + 2, 81, 30, maxX - 6, 83, 34);
-        int outerCoverMinX = outerEdgeAtMinimumX ? minX + 5 : maxX - 10;
-        int outerCoverMaxX = outerEdgeAtMinimumX ? minX + 10 : maxX - 5;
-        add(blocks, outerCoverMinX, 81, -10, outerCoverMaxX, 83, 10);
+        add(blocks, minX + 5, 81, -38, middleX - 2, 83, -32);
+        add(blocks, middleX + 2, 81, 32, maxX - 5, 83, 38);
+        int innerTopCoverMinX = outerEdgeAtMinimumX ? maxX - 10 : minX + 5;
+        int innerTopCoverMaxX = outerEdgeAtMinimumX ? maxX - 5 : minX + 10;
+        add(blocks, innerTopCoverMinX, 81, -10, innerTopCoverMaxX, 83, 10);
+        add(blocks, minX + 7, 81, -23, minX + 14, 83, -16);
+        add(blocks, maxX - 15, 81, 13, maxX - 7, 84, 21);
     }
 
     private static void addCentralDeck(Set<BlockBox> blocks) {
-        add(blocks, -34, 65, -24, 34, 68, 24);
-        addCentralStairs(blocks);
+        add(blocks, -36, 65, -26, 36, 68, 26);
+        add(blocks, -26, 69, -20, 26, 73, -6);
+        add(blocks, -26, 69, 6, 26, 73, 20);
 
-        addMirrored(blocks, new BlockBox(10, 69, 15, 28, 71, 18));
-        add(blocks, -10, 69, -7, -3, 72, 7);
-        add(blocks, 3, 69, -7, 10, 72, 7);
-    }
+        add(blocks, -32, 69, -24, -18, 71, -22);
+        add(blocks, 18, 69, -24, 32, 71, -22);
+        add(blocks, -32, 69, 22, -18, 71, 24);
+        add(blocks, 18, 69, 22, 32, 71, 24);
 
-    private static void addCentralStairs(Set<BlockBox> blocks) {
-        add(blocks, -9, 65, -33, 9, 65, -31);
-        add(blocks, -9, 65, -30, 9, 66, -28);
-        add(blocks, -9, 65, -27, 9, 67, -25);
-        add(blocks, -9, 65, 31, 9, 65, 33);
-        add(blocks, -9, 65, 28, 9, 66, 30);
-        add(blocks, -9, 65, 25, 9, 67, 27);
-
-        add(blocks, -33, 65, -9, -31, 65, 9);
-        add(blocks, -30, 65, -9, -28, 66, 9);
-        add(blocks, -27, 65, -9, -25, 67, 9);
-        add(blocks, 31, 65, -9, 33, 65, 9);
-        add(blocks, 28, 65, -9, 30, 66, 9);
-        add(blocks, 25, 65, -9, 27, 67, 9);
+        add(blocks, -22, 74, -18, -8, 76, -16);
+        add(blocks, 8, 74, -10, 22, 76, -8);
+        add(blocks, -22, 74, 8, -8, 76, 10);
+        add(blocks, 8, 74, 16, 22, 76, 18);
     }
 
     private static void addGroundCover(Set<BlockBox> blocks) {
         List<BlockBox> firstQuadrant = new ArrayList<>();
         firstQuadrant.add(new BlockBox(18, 65, 43, 42, 68, 47));
         firstQuadrant.add(new BlockBox(48, 65, 18, 52, 68, 39));
+        firstQuadrant.add(new BlockBox(46, 65, 50, 57, 69, 60));
         firstQuadrant.add(new BlockBox(58, 65, 68, 72, 67, 77));
+        firstQuadrant.add(new BlockBox(78, 65, 72, 91, 69, 78));
         firstQuadrant.add(new BlockBox(22, 65, 92, 40, 68, 96));
+        firstQuadrant.add(new BlockBox(48, 65, 103, 62, 68, 110));
         firstQuadrant.add(new BlockBox(72, 65, 120, 90, 67, 124));
         firstQuadrant.add(new BlockBox(82, 65, 50, 96, 68, 57));
+        firstQuadrant.add(new BlockBox(93, 65, 83, 101, 69, 95));
+        firstQuadrant.add(new BlockBox(12, 65, 67, 20, 69, 78));
         firstQuadrant.forEach(box -> addMirrored(blocks, box));
     }
 
@@ -203,21 +179,40 @@ public final class ArenaBlueprint {
     }
 
     private static List<JumpPad> createJumpPads() {
-        List<JumpPad> pads = new ArrayList<>(8);
-        addSideJumpPads(pads, -101, -123);
-        addSideJumpPads(pads, 100, 122);
+        List<JumpPad> pads = new ArrayList<>(16);
+        addSideJumpPads(pads, -101, -108, -53);
+        addSideJumpPads(pads, 100, 107, 53);
+        addCentralJumpPads(pads);
         return List.copyOf(pads);
     }
 
-    private static void addSideJumpPads(List<JumpPad> pads, int groundX, int upperX) {
+    private static void addSideJumpPads(
+        List<JumpPad> pads,
+        int groundX,
+        int upperX,
+        int connectedZ
+    ) {
         pads.add(new JumpPad(groundX, ArenaConstants.FLOOR_Y, -108, 1,
-            SECOND_FLOOR_Y, 1.35));
+            SECOND_FLOOR_Y, JumpPad.DEFAULT_VERTICAL_VELOCITY));
         pads.add(new JumpPad(groundX, ArenaConstants.FLOOR_Y, 108, 1,
-            SECOND_FLOOR_Y, 1.35));
+            SECOND_FLOOR_Y, JumpPad.DEFAULT_VERTICAL_VELOCITY));
+        pads.add(new JumpPad(groundX, ArenaConstants.FLOOR_Y, connectedZ, 1,
+            SECOND_FLOOR_Y, JumpPad.DEFAULT_VERTICAL_VELOCITY));
         pads.add(new JumpPad(upperX, SECOND_FLOOR_Y, -53, 1,
-            THIRD_FLOOR_Y, 1.35));
+            THIRD_FLOOR_Y, JumpPad.DEFAULT_VERTICAL_VELOCITY));
         pads.add(new JumpPad(upperX, SECOND_FLOOR_Y, 53, 1,
-            THIRD_FLOOR_Y, 1.35));
+            THIRD_FLOOR_Y, JumpPad.DEFAULT_VERTICAL_VELOCITY));
+    }
+
+    private static void addCentralJumpPads(List<JumpPad> pads) {
+        for (int sign : SIGNS) {
+            pads.add(new JumpPad(sign * 40, ArenaConstants.FLOOR_Y, 0, 1,
+                68, JumpPad.DEFAULT_VERTICAL_VELOCITY));
+            pads.add(new JumpPad(0, ArenaConstants.FLOOR_Y, sign * 30, 1,
+                68, JumpPad.DEFAULT_VERTICAL_VELOCITY));
+            pads.add(new JumpPad(0, 68, sign * 3, 1,
+                73, JumpPad.DEFAULT_VERTICAL_VELOCITY));
+        }
     }
 
     private static List<ArenaSpawn> createSpawns() {

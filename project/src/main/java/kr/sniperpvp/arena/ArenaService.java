@@ -62,8 +62,8 @@ public final class ArenaService implements Listener {
             return;
         }
 
-        JumpPad pad = jumpPadBelow(to);
-        if (pad == null) {
+        Block slimeBlock = slimeBlockBelow(to);
+        if (slimeBlock == null) {
             return;
         }
 
@@ -76,14 +76,12 @@ public final class ArenaService implements Listener {
             currentTick + 20
         );
         player.setFallDistance(0.0f);
-        player.setVelocity(pad.launchVector(player.getVelocity()));
-        player.getWorld().playSound(
-            to,
-            "minecraft:block.slime_block.fall",
-            SoundCategory.PLAYERS,
-            0.9f,
-            0.85f
-        );
+        player.setVelocity(JumpPad.launchVector(
+            player.getVelocity(),
+            player.getEyeLocation().getDirection(),
+            JumpPad.DEFAULT_VERTICAL_VELOCITY
+        ));
+        playJumpPadSound(player, to);
     }
 
     public void prepareLoadedWorlds() {
@@ -205,17 +203,34 @@ public final class ArenaService implements Listener {
         border.setDamageAmount(0.0);
     }
 
-    private static JumpPad jumpPadBelow(Location location) {
+    static boolean activatesJumpPad(Material material) {
+        return material == Material.SLIME_BLOCK;
+    }
+
+    private static void playJumpPadSound(Player player, Location location) {
+        player.getWorld().playSound(
+            location,
+            "minecraft:block.slime_block.hit",
+            SoundCategory.PLAYERS,
+            1.0f,
+            0.8f
+        );
+        player.getWorld().playSound(
+            location,
+            "minecraft:entity.firework_rocket.launch",
+            SoundCategory.PLAYERS,
+            0.7f,
+            1.35f
+        );
+    }
+
+    private static Block slimeBlockBelow(Location location) {
         int highestY = (int) Math.floor(location.getY() - 0.05);
         int lowestY = (int) Math.floor(location.getY() - 0.75);
         for (int y = highestY; y >= lowestY; y--) {
             Block block = location.getWorld().getBlockAt(location.getBlockX(), y, location.getBlockZ());
-            if (block.getType() != Material.SLIME_BLOCK) {
-                continue;
-            }
-            JumpPad pad = ArenaBlueprint.jumpPadAt(block.getX(), block.getY(), block.getZ());
-            if (pad != null) {
-                return pad;
+            if (activatesJumpPad(block.getType())) {
+                return block;
             }
         }
         return null;

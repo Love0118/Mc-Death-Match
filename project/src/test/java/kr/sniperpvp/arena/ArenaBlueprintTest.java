@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
+import org.bukkit.Material;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Test;
 
@@ -33,20 +34,23 @@ class ArenaBlueprintTest {
 
     @Test
     void sideDecksProvideContinuousSecondAndThirdFloors() {
-        assertContinuousSurface(-142, -105, -140, 140, 72);
-        assertContinuousSurface(104, 141, -140, 140, 72);
-        assertContinuousSurface(-142, -105, -48, 48, 80);
-        assertContinuousSurface(104, 141, -48, 48, 80);
+        assertSolidVolume(-142, -105, 65, 72, -140, 140);
+        assertSolidVolume(104, 141, 65, 72, -140, 140);
+        assertSolidVolume(-142, -105, 73, 80, -48, 48);
+        assertSolidVolume(104, 141, 73, 80, -48, 48);
     }
 
     @Test
-    void versionThreeUsesEightExposedThreeByThreeJumpPads() {
-        assertEquals(3, ArenaConstants.BUILD_VERSION);
-        assertEquals(8, ArenaBlueprint.jumpPads().size());
-        assertEquals(8, new HashSet<>(ArenaBlueprint.jumpPads()).size());
-        assertEquals(72, ArenaBlueprint.jumpPads().stream().mapToInt(JumpPad::blockCount).sum());
-        assertEquals(4, ArenaBlueprint.jumpPads().stream()
+    void versionFourUsesSixteenPurposefulThreeByThreeJumpPads() {
+        assertEquals(4, ArenaConstants.BUILD_VERSION);
+        assertEquals(16, ArenaBlueprint.jumpPads().size());
+        assertEquals(16, new HashSet<>(ArenaBlueprint.jumpPads()).size());
+        assertEquals(144, ArenaBlueprint.jumpPads().stream().mapToInt(JumpPad::blockCount).sum());
+        assertEquals(10, ArenaBlueprint.jumpPads().stream()
             .filter(pad -> pad.surfaceY() == ArenaConstants.FLOOR_Y)
+            .count());
+        assertEquals(2, ArenaBlueprint.jumpPads().stream()
+            .filter(pad -> pad.surfaceY() == 68)
             .count());
         assertEquals(4, ArenaBlueprint.jumpPads().stream()
             .filter(pad -> pad.surfaceY() == 72)
@@ -76,26 +80,49 @@ class ArenaBlueprintTest {
     @Test
     void jumpPadsOnlyReplaceVerticalVelocity() {
         Vector existingVelocity = new Vector(0.21, -0.35, -0.17);
+        Vector lookDirection = new Vector(0.6, -0.4, 0.8);
         for (JumpPad pad : ArenaBlueprint.jumpPads()) {
-            Vector launch = pad.launchVector(existingVelocity);
-            assertEquals(existingVelocity.getX(), launch.getX(), 0.00001);
-            assertEquals(existingVelocity.getZ(), launch.getZ(), 0.00001);
+            Vector launch = pad.launchVector(existingVelocity, lookDirection);
+            assertEquals(existingVelocity.getX() + 0.27, launch.getX(), 0.00001);
+            assertEquals(existingVelocity.getZ() + 0.36, launch.getZ(), 0.00001);
             assertEquals(pad.verticalVelocity(), launch.getY(), 0.00001);
-            assertTrue(pad.targetSurfaceY() == 72 || pad.targetSurfaceY() == 80);
+            assertTrue(pad.targetSurfaceY() == 68
+                || pad.targetSurfaceY() == 72
+                || pad.targetSurfaceY() == 73
+                || pad.targetSurfaceY() == 80);
+            assertEquals(JumpPad.DEFAULT_VERTICAL_VELOCITY, pad.verticalVelocity(), 0.00001);
         }
     }
 
-    private static void assertContinuousSurface(
+    @Test
+    void everySlimeBlockActivatesTheGenericJumpPadTrigger() {
+        assertTrue(ArenaService.activatesJumpPad(Material.SLIME_BLOCK));
+        assertFalse(ArenaService.activatesJumpPad(Material.GRAY_CONCRETE));
+
+        Vector launch = JumpPad.launchVector(
+            new Vector(-0.12, 0.0, 0.08),
+            new Vector(-1.0, 0.5, 0.0),
+            JumpPad.DEFAULT_VERTICAL_VELOCITY
+        );
+        assertEquals(-0.12 - JumpPad.LOOK_DIRECTION_BOOST, launch.getX(), 0.00001);
+        assertEquals(0.08, launch.getZ(), 0.00001);
+        assertEquals(JumpPad.DEFAULT_VERTICAL_VELOCITY, launch.getY(), 0.00001);
+    }
+
+    private static void assertSolidVolume(
         int minX,
         int maxX,
+        int minY,
+        int maxY,
         int minZ,
-        int maxZ,
-        int y
+        int maxZ
     ) {
         for (int x = minX; x <= maxX; x++) {
-            for (int z = minZ; z <= maxZ; z++) {
-                assertTrue(hasBlockAt(x, y, z),
-                    "Missing deck block at " + x + "," + y + "," + z);
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    assertTrue(hasBlockAt(x, y, z),
+                        "Missing solid block at " + x + "," + y + "," + z);
+                }
             }
         }
     }

@@ -10,6 +10,10 @@ record JumpPad(
     int targetSurfaceY,
     double verticalVelocity
 ) {
+    static final double DEFAULT_VERTICAL_VELOCITY = 1.55;
+    static final double LOOK_DIRECTION_BOOST = 0.45;
+    private static final double MIN_HORIZONTAL_LOOK_LENGTH = 0.0001;
+
     JumpPad {
         if (radius < 0) {
             throw new IllegalArgumentException("Jump-pad radius must not be negative");
@@ -33,7 +37,22 @@ record JumpPad(
         return width * width;
     }
 
-    Vector launchVector(Vector currentVelocity) {
-        return new Vector(currentVelocity.getX(), verticalVelocity, currentVelocity.getZ());
+    Vector launchVector(Vector currentVelocity, Vector lookDirection) {
+        return launchVector(currentVelocity, lookDirection, verticalVelocity);
+    }
+
+    static Vector launchVector(
+        Vector currentVelocity,
+        Vector lookDirection,
+        double requestedVerticalVelocity
+    ) {
+        Vector launch = currentVelocity.clone();
+        Vector horizontalLook = lookDirection.clone().setY(0.0);
+        if (horizontalLook.lengthSquared() >= MIN_HORIZONTAL_LOOK_LENGTH) {
+            horizontalLook.normalize().multiply(LOOK_DIRECTION_BOOST);
+            launch.add(horizontalLook);
+        }
+        launch.setY(requestedVerticalVelocity);
+        return launch;
     }
 }

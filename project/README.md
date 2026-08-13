@@ -65,18 +65,21 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 
 ## Arena
 
-`sniper_arena` is generated as a 300x300 gray-concrete map with slime-block jump pads. Layout version 3
-removes the scattered stepped towers. Each side has one continuous Y=72 second-floor deck running nearly
-the full map length, with a Y=80 third-floor deck over its middle section. Wide end and side supports leave
-usable ground routes beneath the decks. The center uses a single low platform, broad stairs, long cover
-walls and symmetric ground cover instead of a tall central citadel.
+`sniper_arena` is generated as a 300x300 gray-concrete map with slime-block jump pads. Layout version 4
+removes the side openings: the left and right second-floor structures are solid from Y=65 through Y=72,
+and their centered third-floor structures are solid from Y=73 through Y=80. The center has a wide Y=68
+platform and two useful Y=73 upper structures. Additional box, staggered and long-wall cover is distributed
+across the ground, second floors, third floors and central platforms.
 
-Eight 3x3 jump pads connect ground to the side decks and the side decks to their third floors. Ground pads
-replace the Y=64 floor blocks instead of sitting one block above them. Pad activation only replaces vertical
-velocity and preserves the player's current horizontal velocity and normal air control. Dead and spectator
-players cannot activate pads. When an older arena build marker is found, startup restores the gray Y=64
-floor, clears the old layout from Y=65 through Y=96 and constructs version 3. The rebuild is a one-time
-operation on the first restart with the updated plugin.
+Sixteen 3x3 jump pads have specific reachable destinations: ten ground pads lead to the center or side
+second floors, two central pads lead to the Y=73 structures, and four side pads lead to the third floors.
+Each side also has an extra ground-to-second-floor pad beside one of its third-floor pads. Ground pads replace
+the Y=64 floor blocks. In addition to generated pads, every slime block anywhere in the arena activates the
+same launch behavior. A launch sets vertical velocity to 1.55 and adds 0.45 horizontal velocity in the
+player's look direction while preserving existing horizontal momentum. Dead and spectator players cannot
+activate pads. A layered slime-impact and firework-launch cue plays at the pad for the user and nearby
+players. On the first restart, startup restores the Y=64 floor, clears Y=65 through Y=96 and builds version
+4 automatically.
 
 `bukkit.yml` binds the default world to the plugin generator. Do not launch the server once without the
 SniperPvp JAR installed, or Paper would create ordinary terrain under the same world name.
