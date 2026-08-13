@@ -14,6 +14,9 @@ This is a standalone Paper server: Velocity, BungeeCord and PROXY protocol forwa
    - `/darp status`
 3. Join with any supported client and run `/sni start` as an operator or from the console.
 
+The toggle scope keeps its narrowed FOV while allowing normal yaw-relative WASD movement, sprinting,
+sneaking and jumping at the configured combat movement speed.
+
 The launcher accepts the EULA, creates a private Dropbox configuration from
 `plugins/DropboxAutoResourcePack/config.example.yml`, and starts on port 25565 with a maximum of 50 players.
 Before Paper 26.2 opens the bundled older arena for the first time, it creates a ZIP under `backups/` and
