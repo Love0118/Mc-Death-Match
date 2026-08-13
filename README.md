@@ -45,9 +45,10 @@ are included. OAuth secrets, operators and per-player data are not included.
 
 ## Arena layout
 
-The bundled plugin uses arena layout version 3. On the first start with this version it restores the Y=64
-floor, removes the previous above-ground layout and generates a 300x300 gray-concrete arena. Long second-
-floor decks run along both sides, with one third-floor section centered on each deck. The middle remains open
-around a low platform, broad stairs and long cover walls. Eight 3x3 slime-block jump pads connect the floors;
-ground pads are embedded in Y=64 and only add vertical velocity. This one-time rebuild runs automatically
-during startup; no world folder replacement or command is required.
+The bundled plugin uses arena layout version 4. On the first start with this version it restores the Y=64
+floor, removes the previous layout and generates a 300x300 gray-concrete arena. Both side structures are
+solid through their Y=72 second floors, and their centered third floors are solid through Y=80. A useful
+two-level center and additional cover fill the previously empty firing lanes. Sixteen generated 3x3 pads
+connect real landing surfaces. Any slime block in the arena launches with vertical velocity 1.55 and adds
+0.45 horizontal velocity in the player's look direction. This rebuild runs automatically during startup;
+no world folder replacement or command is required.
