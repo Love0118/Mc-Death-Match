@@ -65,9 +65,16 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 
 ## Arena
 
-`sniper_arena` is generated as a 300x300 gray-concrete-only map. It contains a central raised citadel,
-four quadrant plateaus, four cardinal towers, symmetric walls/low cover, edge bunkers and perimeter walls.
-The layout is generated once and marked with arena build version 1.
+`sniper_arena` is generated as a 300x300 gray-concrete map with slime-block jump pads. Layout version 2
+contains a three-tier central citadel, four three-tier quadrant towers, four taller cardinal towers, four
+midfield outposts, symmetric walls/low cover, edge bunkers and perimeter walls. The accessible firing
+surfaces range from Y=68 to Y=88 instead of concentrating every sightline near ground level.
+
+Forty 3x3 jump pads connect the ground, intermediate floors and roofs. Stepping onto a pad launches the
+player vertically, then guides them toward the associated landing surface after clearing its wall; dead and
+spectator players cannot activate pads. When an older arena build marker is found, startup clears the old
+layout from Y=65 through Y=96 before constructing version 2, so version 1 blocks cannot remain mixed into
+the new map. The rebuild is a one-time operation on the first restart with the updated plugin.
 
 `bukkit.yml` binds the default world to the plugin generator. Do not launch the server once without the
 SniperPvp JAR installed, or Paper would create ordinary terrain under the same world name.

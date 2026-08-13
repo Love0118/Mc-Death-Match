@@ -1,7 +1,9 @@
 package kr.sniperpvp.arena;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -12,12 +14,17 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameRules;
 import org.bukkit.HeightMap;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.GameMode;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -28,6 +35,7 @@ public final class ArenaService implements Listener {
     private final WeightedSpawnSelector spawnSelector = new WeightedSpawnSelector();
     private final long[] lastSpawnUseNanos = new long[ArenaBlueprint.spawns().size()];
     private final Set<String> preparedWorlds = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, Integer> jumpPadCooldowns = new ConcurrentHashMap<>();
 
     public ArenaService(SniperPvpPlugin plugin, Supplier<PluginSettings> settings) {
         this.plugin = plugin;
@@ -37,6 +45,64 @@ public final class ArenaService implements Listener {
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
         prepare(event.getWorld());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        jumpPadCooldowns.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        if (!isArena(player)
+            || player.isDead()
+            || player.getGameMode() == GameMode.SPECTATOR
+            || sameBlock(from, to)) {
+            return;
+        }
+
+        Block floorBlock = to.getWorld().getBlockAt(
+            to.getBlockX(),
+            (int) Math.floor(to.getY() - 0.15),
+            to.getBlockZ()
+        );
+        if (floorBlock.getType() != Material.SLIME_BLOCK) {
+            return;
+        }
+        JumpPad pad = ArenaBlueprint.jumpPadAt(
+            floorBlock.getX(),
+            floorBlock.getY(),
+            floorBlock.getZ()
+        );
+        if (pad == null) {
+            return;
+        }
+
+        int currentTick = Bukkit.getCurrentTick();
+        if (currentTick < jumpPadCooldowns.getOrDefault(player.getUniqueId(), 0)) {
+            return;
+        }
+        jumpPadCooldowns.put(
+            player.getUniqueId(),
+            currentTick + pad.horizontalGuidanceDelayTicks() + 20
+        );
+        player.setFallDistance(0.0f);
+        player.setVelocity(pad.verticalLaunchVector());
+        player.getWorld().playSound(
+            to,
+            "minecraft:block.slime_block.fall",
+            SoundCategory.PLAYERS,
+            0.9f,
+            0.85f
+        );
+        Bukkit.getScheduler().runTaskLater(
+            plugin,
+            () -> guideJump(player, pad),
+            pad.horizontalGuidanceDelayTicks()
+        );
     }
 
     public void prepareLoadedWorlds() {
@@ -65,15 +131,19 @@ public final class ArenaService implements Listener {
             return;
         }
 
-        plugin.getLogger().info("Building the 300x300 gray-concrete arena...");
-        ArenaBuilder.BuildResult result = builder.build(world);
+        boolean replacingExistingLayout = version != null;
+        plugin.getLogger().info("Building arena layout version " + ArenaConstants.BUILD_VERSION
+            + (replacingExistingLayout ? " over version " + version : " in a new world") + "...");
+        ArenaBuilder.BuildResult result = builder.build(world, replacingExistingLayout);
         world.getPersistentDataContainer().set(
             plugin.arenaVersionKey(),
             PersistentDataType.INTEGER,
             ArenaConstants.BUILD_VERSION
         );
-        plugin.getLogger().info("Arena built: " + result.regions() + " regions, "
-            + result.plannedBlocks() + " planned block writes, " + result.elapsedMillis() + " ms");
+        plugin.getLogger().info("Arena built: " + result.regions() + " concrete regions, "
+            + result.jumpPads() + " jump pads (" + result.jumpPadBlocks() + " slime blocks), "
+            + result.plannedBlocks() + " planned concrete writes, " + result.clearedBlocks()
+            + " old blocks cleared, " + result.elapsedMillis() + " ms");
     }
 
     public World world() {
@@ -152,5 +222,26 @@ public final class ArenaService implements Listener {
         border.setSize(300.0);
         border.setWarningDistance(3);
         border.setDamageAmount(0.0);
+    }
+
+    private static boolean sameBlock(Location first, Location second) {
+        return first.getBlockX() == second.getBlockX()
+            && first.getBlockY() == second.getBlockY()
+            && first.getBlockZ() == second.getBlockZ();
+    }
+
+    private void guideJump(Player player, JumpPad pad) {
+        if (!player.isOnline()
+            || player.isDead()
+            || player.getGameMode() == GameMode.SPECTATOR
+            || !isArena(player)
+            || player.getLocation().getY() <= pad.surfaceY() + 1.0) {
+            return;
+        }
+        player.setVelocity(pad.guidedLaunchVector(
+            player.getLocation().getX(),
+            player.getLocation().getZ(),
+            player.getVelocity().getY()
+        ));
     }
 }

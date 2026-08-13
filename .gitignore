@@ -6,6 +6,8 @@ project/dist/
 # Paper server binaries and generated runtime
 server/paper-*.jar
 server/cache/
+server/.paper/
+server/.paper-26.2-migration-backup.done
 server/backups/
 server/logs/
 server/libraries/
