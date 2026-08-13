@@ -5,6 +5,9 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 ## Implemented gameplay
 
 - Right click toggles the full-screen scope overlay and narrowed FOV. Right click again to leave the scope.
+  While scoped, a server-side input compensator restores normal yaw-relative WASD movement at the configured
+  combat speed without removing the FOV-producing Slowness effect. Sprinting, sneaking and jumping remain
+  usable, diagonal input is normalized, and existing vertical velocity is preserved.
   Firing keeps the scope while rounds remain; an empty magazine, manual reload or changing away from the rifle
   drops it. The overlay has no custom crosshair, so
   only Minecraft's crosshair remains. The rifle does not enter vanilla item-use state, so an unmodified

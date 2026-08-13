@@ -155,6 +155,7 @@ final class GunService {
             false
         ));
         runtime.scoped = true;
+        startScopedMovement(player, runtime);
         playPrivate(player, settings.get().sounds().zoomIn(), settings.get().sounds().zoomVolume(), 1.0);
     }
 
@@ -344,6 +345,8 @@ final class GunService {
             return;
         }
         runtime.scoped = false;
+        cancelTask(runtime.scopedMovementTask);
+        runtime.scopedMovementTask = null;
         if (isScopeOverlayHelmet(player.getInventory().getHelmet())) {
             player.getInventory().setHelmet(cloneOrNull(runtime.previousHelmet));
         }
@@ -372,6 +375,25 @@ final class GunService {
         GunRuntime replacement = new GunRuntime(capacity);
         runtimes.put(playerId, replacement);
         return replacement;
+    }
+
+    private void startScopedMovement(Player player, GunRuntime runtime) {
+        cancelTask(runtime.scopedMovementTask);
+        runtime.scopedMovementTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            if (!runtime.scoped || !isActive(player, runtime)) {
+                endZoom(player, false);
+                return;
+            }
+            Vector scopedVelocity = ScopedMovement.velocity(
+                player.getYaw(),
+                player.getCurrentInput(),
+                settings.get().game().movementSpeed(),
+                player.getVelocity().getY()
+            );
+            if (scopedVelocity != null) {
+                player.setVelocity(scopedVelocity);
+            }
+        }, 1L, 1L);
     }
 
     private void beginReload(
@@ -707,6 +729,8 @@ final class GunService {
         runtime.reloadProgressTask = null;
         cancelTask(runtime.boltTask);
         runtime.boltTask = null;
+        cancelTask(runtime.scopedMovementTask);
+        runtime.scopedMovementTask = null;
     }
 
     private void cancelTask(BukkitTask task) {
@@ -730,6 +754,7 @@ final class GunService {
         private PotionEffect previousSlowness;
         private BukkitTask reloadProgressTask;
         private BukkitTask boltTask;
+        private BukkitTask scopedMovementTask;
         private GunRuntime(int magazineSize) {
             magazine = new RifleMagazine(magazineSize);
         }

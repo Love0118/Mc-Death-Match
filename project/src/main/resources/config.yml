@@ -52,6 +52,7 @@ rifle:
   magazine-size: 5
   reload-ticks: 90
   bolt-sound-delay-ticks: 14
+  # Produces the FOV zoom. Server-side WASD compensation keeps movement available while scoped.
   zoom-slowness-amplifier: 12
   require-zoom: false
   damage:
