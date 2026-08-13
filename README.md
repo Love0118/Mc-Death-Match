@@ -42,3 +42,11 @@ NoChatReports 2.7.8 is included because 2.7.7 does not load its NMS provider on 
 
 Paper downloads its required libraries on the first launch. The prebuilt arena, plugins and all five resource packs
 are included. OAuth secrets, operators and per-player data are not included.
+
+## Arena layout
+
+The bundled plugin uses arena layout version 2. On the first start with this version it removes the previous
+above-ground layout and generates a 300x300 gray-concrete arena with a three-tier central citadel, four
+three-tier quadrant towers, four tall cardinal towers, midfield outposts, symmetric cover and edge bunkers.
+Forty 3x3 slime-block jump pads connect the ground and elevated firing positions. This one-time rebuild runs
+automatically during startup; no world folder replacement or command is required.
