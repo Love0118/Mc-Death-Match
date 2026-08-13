@@ -45,8 +45,9 @@ are included. OAuth secrets, operators and per-player data are not included.
 
 ## Arena layout
 
-The bundled plugin uses arena layout version 2. On the first start with this version it removes the previous
-above-ground layout and generates a 300x300 gray-concrete arena with a three-tier central citadel, four
-three-tier quadrant towers, four tall cardinal towers, midfield outposts, symmetric cover and edge bunkers.
-Forty 3x3 slime-block jump pads connect the ground and elevated firing positions. This one-time rebuild runs
-automatically during startup; no world folder replacement or command is required.
+The bundled plugin uses arena layout version 3. On the first start with this version it restores the Y=64
+floor, removes the previous above-ground layout and generates a 300x300 gray-concrete arena. Long second-
+floor decks run along both sides, with one third-floor section centered on each deck. The middle remains open
+around a low platform, broad stairs and long cover walls. Eight 3x3 slime-block jump pads connect the floors;
+ground pads are embedded in Y=64 and only add vertical velocity. This one-time rebuild runs automatically
+during startup; no world folder replacement or command is required.
