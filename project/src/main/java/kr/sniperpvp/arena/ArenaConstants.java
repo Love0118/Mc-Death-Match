@@ -7,9 +7,9 @@ public final class ArenaConstants {
     public static final int MAX_Z = 149;
     public static final int FLOOR_BOTTOM_Y = 60;
     public static final int FLOOR_Y = 64;
-    public static final int MAX_BUILD_Y = 90;
+    public static final int MAX_BUILD_Y = 83;
     public static final int REBUILD_CLEAR_MAX_Y = 96;
-    public static final int BUILD_VERSION = 2;
+    public static final int BUILD_VERSION = 3;
 
     private ArenaConstants() {
     }

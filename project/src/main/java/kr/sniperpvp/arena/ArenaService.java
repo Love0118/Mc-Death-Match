@@ -55,28 +55,14 @@ public final class ArenaService implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        Location from = event.getFrom();
         Location to = event.getTo();
         if (!isArena(player)
             || player.isDead()
-            || player.getGameMode() == GameMode.SPECTATOR
-            || sameBlock(from, to)) {
+            || player.getGameMode() == GameMode.SPECTATOR) {
             return;
         }
 
-        Block floorBlock = to.getWorld().getBlockAt(
-            to.getBlockX(),
-            (int) Math.floor(to.getY() - 0.15),
-            to.getBlockZ()
-        );
-        if (floorBlock.getType() != Material.SLIME_BLOCK) {
-            return;
-        }
-        JumpPad pad = ArenaBlueprint.jumpPadAt(
-            floorBlock.getX(),
-            floorBlock.getY(),
-            floorBlock.getZ()
-        );
+        JumpPad pad = jumpPadBelow(to);
         if (pad == null) {
             return;
         }
@@ -87,21 +73,16 @@ public final class ArenaService implements Listener {
         }
         jumpPadCooldowns.put(
             player.getUniqueId(),
-            currentTick + pad.horizontalGuidanceDelayTicks() + 20
+            currentTick + 20
         );
         player.setFallDistance(0.0f);
-        player.setVelocity(pad.verticalLaunchVector());
+        player.setVelocity(pad.launchVector(player.getVelocity()));
         player.getWorld().playSound(
             to,
             "minecraft:block.slime_block.fall",
             SoundCategory.PLAYERS,
             0.9f,
             0.85f
-        );
-        Bukkit.getScheduler().runTaskLater(
-            plugin,
-            () -> guideJump(player, pad),
-            pad.horizontalGuidanceDelayTicks()
         );
     }
 
@@ -224,24 +205,19 @@ public final class ArenaService implements Listener {
         border.setDamageAmount(0.0);
     }
 
-    private static boolean sameBlock(Location first, Location second) {
-        return first.getBlockX() == second.getBlockX()
-            && first.getBlockY() == second.getBlockY()
-            && first.getBlockZ() == second.getBlockZ();
-    }
-
-    private void guideJump(Player player, JumpPad pad) {
-        if (!player.isOnline()
-            || player.isDead()
-            || player.getGameMode() == GameMode.SPECTATOR
-            || !isArena(player)
-            || player.getLocation().getY() <= pad.surfaceY() + 1.0) {
-            return;
+    private static JumpPad jumpPadBelow(Location location) {
+        int highestY = (int) Math.floor(location.getY() - 0.05);
+        int lowestY = (int) Math.floor(location.getY() - 0.75);
+        for (int y = highestY; y >= lowestY; y--) {
+            Block block = location.getWorld().getBlockAt(location.getBlockX(), y, location.getBlockZ());
+            if (block.getType() != Material.SLIME_BLOCK) {
+                continue;
+            }
+            JumpPad pad = ArenaBlueprint.jumpPadAt(block.getX(), block.getY(), block.getZ());
+            if (pad != null) {
+                return pad;
+            }
         }
-        player.setVelocity(pad.guidedLaunchVector(
-            player.getLocation().getX(),
-            player.getLocation().getZ(),
-            player.getVelocity().getY()
-        ));
+        return null;
     }
 }

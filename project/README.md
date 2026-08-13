@@ -65,16 +65,18 @@ A small automatic-respawn deathmatch server built around a server-side hitscan r
 
 ## Arena
 
-`sniper_arena` is generated as a 300x300 gray-concrete map with slime-block jump pads. Layout version 2
-contains a three-tier central citadel, four three-tier quadrant towers, four taller cardinal towers, four
-midfield outposts, symmetric walls/low cover, edge bunkers and perimeter walls. The accessible firing
-surfaces range from Y=68 to Y=88 instead of concentrating every sightline near ground level.
+`sniper_arena` is generated as a 300x300 gray-concrete map with slime-block jump pads. Layout version 3
+removes the scattered stepped towers. Each side has one continuous Y=72 second-floor deck running nearly
+the full map length, with a Y=80 third-floor deck over its middle section. Wide end and side supports leave
+usable ground routes beneath the decks. The center uses a single low platform, broad stairs, long cover
+walls and symmetric ground cover instead of a tall central citadel.
 
-Forty 3x3 jump pads connect the ground, intermediate floors and roofs. Stepping onto a pad launches the
-player vertically, then guides them toward the associated landing surface after clearing its wall; dead and
-spectator players cannot activate pads. When an older arena build marker is found, startup clears the old
-layout from Y=65 through Y=96 before constructing version 2, so version 1 blocks cannot remain mixed into
-the new map. The rebuild is a one-time operation on the first restart with the updated plugin.
+Eight 3x3 jump pads connect ground to the side decks and the side decks to their third floors. Ground pads
+replace the Y=64 floor blocks instead of sitting one block above them. Pad activation only replaces vertical
+velocity and preserves the player's current horizontal velocity and normal air control. Dead and spectator
+players cannot activate pads. When an older arena build marker is found, startup restores the gray Y=64
+floor, clears the old layout from Y=65 through Y=96 and constructs version 3. The rebuild is a one-time
+operation on the first restart with the updated plugin.
 
 `bukkit.yml` binds the default world to the plugin generator. Do not launch the server once without the
 SniperPvp JAR installed, or Paper would create ordinary terrain under the same world name.

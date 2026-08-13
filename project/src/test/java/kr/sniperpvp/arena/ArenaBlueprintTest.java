@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
-import org.junit.jupiter.api.Test;
 import org.bukkit.util.Vector;
+import org.junit.jupiter.api.Test;
 
 class ArenaBlueprintTest {
     @Test
@@ -34,66 +32,72 @@ class ArenaBlueprintTest {
     }
 
     @Test
-    void layoutVersionTwoHasFortyThreeByThreeJumpPads() {
-        assertEquals(2, ArenaConstants.BUILD_VERSION);
-        assertEquals(40, ArenaBlueprint.jumpPads().size());
-        assertEquals(40, new HashSet<>(ArenaBlueprint.jumpPads()).size());
-        assertEquals(360, ArenaBlueprint.jumpPads().stream().mapToInt(JumpPad::blockCount).sum());
-        assertTrue(ArenaBlueprint.jumpPads().stream().allMatch(pad ->
-            ArenaConstants.contains(pad.centerX() - pad.radius(), pad.centerZ() - pad.radius())
-                && ArenaConstants.contains(pad.centerX() + pad.radius(), pad.centerZ() + pad.radius())
-                && pad.surfaceY() >= ArenaConstants.FLOOR_Y + 1
-                && pad.targetSurfaceY() <= ArenaConstants.MAX_BUILD_Y
-        ));
+    void sideDecksProvideContinuousSecondAndThirdFloors() {
+        assertContinuousSurface(-142, -105, -140, 140, 72);
+        assertContinuousSurface(104, 141, -140, 140, 72);
+        assertContinuousSurface(-142, -105, -48, 48, 80);
+        assertContinuousSurface(104, 141, -48, 48, 80);
     }
 
     @Test
-    void everyRaisedTierHasSupportedLaunchAndLandingSurfaces() {
-        Set<Integer> targetLevels = new HashSet<>();
+    void versionThreeUsesEightExposedThreeByThreeJumpPads() {
+        assertEquals(3, ArenaConstants.BUILD_VERSION);
+        assertEquals(8, ArenaBlueprint.jumpPads().size());
+        assertEquals(8, new HashSet<>(ArenaBlueprint.jumpPads()).size());
+        assertEquals(72, ArenaBlueprint.jumpPads().stream().mapToInt(JumpPad::blockCount).sum());
+        assertEquals(4, ArenaBlueprint.jumpPads().stream()
+            .filter(pad -> pad.surfaceY() == ArenaConstants.FLOOR_Y)
+            .count());
+        assertEquals(4, ArenaBlueprint.jumpPads().stream()
+            .filter(pad -> pad.surfaceY() == 72)
+            .count());
+
         for (JumpPad pad : ArenaBlueprint.jumpPads()) {
+            assertTrue(ArenaConstants.contains(
+                pad.centerX() - pad.radius(),
+                pad.centerZ() - pad.radius()
+            ));
+            assertTrue(ArenaConstants.contains(
+                pad.centerX() + pad.radius(),
+                pad.centerZ() + pad.radius()
+            ));
+            assertNotNull(ArenaBlueprint.jumpPadAt(pad.centerX(), pad.surfaceY(), pad.centerZ()));
             for (int x = pad.centerX() - pad.radius(); x <= pad.centerX() + pad.radius(); x++) {
                 for (int z = pad.centerZ() - pad.radius(); z <= pad.centerZ() + pad.radius(); z++) {
-                    assertTrue(pad.surfaceY() == ArenaConstants.FLOOR_Y + 1
-                        || hasBlockAt(x, pad.surfaceY() - 1, z));
+                    if (pad.surfaceY() > ArenaConstants.FLOOR_Y) {
+                        assertTrue(hasBlockAt(x, pad.surfaceY() - 1, z));
+                    }
                     assertFalse(hasBlockAt(x, pad.surfaceY() + 1, z));
                 }
             }
-            assertTrue(hasSurfaceAt(pad.targetX(), pad.targetSurfaceY(), pad.targetZ()));
-            assertFalse(hasBlockAt(pad.targetX(), pad.targetSurfaceY() + 1, pad.targetZ()));
-            assertNotNull(ArenaBlueprint.jumpPadAt(pad.centerX(), pad.surfaceY(), pad.centerZ()));
-
-            Vector verticalLaunch = pad.verticalLaunchVector();
-            assertEquals(pad.verticalVelocity(), verticalLaunch.getY(), 0.00001);
-            assertEquals(0.0, Math.hypot(verticalLaunch.getX(), verticalLaunch.getZ()), 0.00001);
-            Vector guidedLaunch = pad.guidedLaunchVector(
-                pad.centerX() + 0.5,
-                pad.centerZ() + 0.5,
-                0.25
-            );
-            assertEquals(0.25, guidedLaunch.getY(), 0.00001);
-            assertEquals(
-                pad.horizontalSpeed(),
-                Math.hypot(guidedLaunch.getX(), guidedLaunch.getZ()),
-                0.00001
-            );
-            assertTrue(pad.horizontalGuidanceDelayTicks() >= 4);
-            assertTrue(pad.horizontalGuidanceDelayTicks() <= 13);
-            targetLevels.add(pad.targetSurfaceY());
         }
-        assertEquals(
-            new HashSet<>(Arrays.asList(68, 69, 70, 74, 75, 77, 83, 84, 88)),
-            targetLevels
-        );
     }
 
-    private static boolean hasSurfaceAt(int x, int surfaceY, int z) {
-        return ArenaBlueprint.blocks().stream().anyMatch(box ->
-            x >= box.minX()
-                && x <= box.maxX()
-                && z >= box.minZ()
-                && z <= box.maxZ()
-                && box.maxY() == surfaceY
-        );
+    @Test
+    void jumpPadsOnlyReplaceVerticalVelocity() {
+        Vector existingVelocity = new Vector(0.21, -0.35, -0.17);
+        for (JumpPad pad : ArenaBlueprint.jumpPads()) {
+            Vector launch = pad.launchVector(existingVelocity);
+            assertEquals(existingVelocity.getX(), launch.getX(), 0.00001);
+            assertEquals(existingVelocity.getZ(), launch.getZ(), 0.00001);
+            assertEquals(pad.verticalVelocity(), launch.getY(), 0.00001);
+            assertTrue(pad.targetSurfaceY() == 72 || pad.targetSurfaceY() == 80);
+        }
+    }
+
+    private static void assertContinuousSurface(
+        int minX,
+        int maxX,
+        int minZ,
+        int maxZ,
+        int y
+    ) {
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                assertTrue(hasBlockAt(x, y, z),
+                    "Missing deck block at " + x + "," + y + "," + z);
+            }
+        }
     }
 
     private static boolean hasBlockAt(int x, int y, int z) {

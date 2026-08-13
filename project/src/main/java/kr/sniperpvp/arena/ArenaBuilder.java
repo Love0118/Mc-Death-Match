@@ -29,6 +29,11 @@ final class ArenaBuilder {
         long clearedBlocks = 0L;
         for (int x = ArenaConstants.MIN_X; x <= ArenaConstants.MAX_X; x++) {
             for (int z = ArenaConstants.MIN_Z; z <= ArenaConstants.MAX_Z; z++) {
+                Block floorBlock = world.getBlockAt(x, ArenaConstants.FLOOR_Y, z);
+                if (floorBlock.getType() != Material.GRAY_CONCRETE) {
+                    floorBlock.setType(Material.GRAY_CONCRETE, false);
+                    clearedBlocks++;
+                }
                 for (int y = ArenaConstants.FLOOR_Y + 1;
                     y <= ArenaConstants.REBUILD_CLEAR_MAX_Y;
                     y++) {
